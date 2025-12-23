@@ -38,6 +38,8 @@ Each domain has its own config file in `src/config/configs/`:
 | `cache.config.ts` | `cache` | Cache driver and TTL |
 | `queue.config.ts` | `queue` | BullMQ settings |
 | `logging.config.ts` | `logging` | Log level and formatting |
+| `auth.config.ts` | `auth` | JWT, cookies, magic link |
+| `email.config.ts` | `email` | SMTP settings |
 
 ### 3. TypedConfigService
 
@@ -127,6 +129,33 @@ interface LoggingConfig {
   prettyPrint: boolean;           // true if NODE_ENV !== 'production'
   enablePerformanceLogging: boolean; // ENABLE_PERF_LOGGING
   enableQueryLogging: boolean;       // ENABLE_QUERY_LOGGING
+}
+```
+
+### AuthConfig
+
+```typescript
+interface AuthConfig {
+  accessSecret: string;       // ACCESS_SECRET (min 32 chars)
+  accessExpiresIn: string;    // ACCESS_EXPIRES_IN (e.g., '10m')
+  refreshSecret: string;      // REFRESH_SECRET (min 32 chars)
+  refreshExpiresIn: string;   // REFRESH_EXPIRES_IN (e.g., '1d')
+  magicLinkUrl: string;       // MAGIC_LINK_URL
+  magicLinkExpiresIn: number; // MAGIC_LINK_EXPIRES_IN (seconds)
+  cookieDomain: string;       // COOKIE_DOMAIN
+  cookieSecure: boolean;      // COOKIE_SECURE
+}
+```
+
+### EmailConfig
+
+```typescript
+interface EmailConfig {
+  host: string;     // SMTP_HOST
+  port: number;     // SMTP_PORT
+  user?: string;    // SMTP_USER (optional)
+  pass?: string;    // SMTP_PASS (optional)
+  from: string;     // SMTP_FROM
 }
 ```
 

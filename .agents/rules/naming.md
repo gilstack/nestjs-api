@@ -15,6 +15,10 @@
 | Mapper | `{name}.mapper.ts` | `user.mapper.ts` |
 | Config | `{name}.config.ts` | `database.config.ts` |
 | Processor | `{name}.processor.ts` | `email.processor.ts` |
+| Guard | `{name}.guard.ts` | `jwt-auth.guard.ts` |
+| Decorator | `{name}.decorator.ts` | `current-user.decorator.ts` |
+| Strategy | `{name}.strategy.ts` | `jwt-cookie.strategy.ts` |
+| Worker | `{name}-worker.service.ts` | `email-worker.service.ts` |
 
 ## Classes
 
@@ -29,6 +33,10 @@
 | Repository Interface | `I{Name}Repository` | `IUserRepository` |
 | Repository Impl | `{Impl}{Name}Repository` | `PrismaUserRepository` |
 | Use Case | `{Action}{Name}UseCase` | `CreateUserUseCase` |
+| Guard | `{Name}Guard` | `JwtAuthGuard` |
+| Decorator | `{Name}` (function) | `CurrentUser` |
+| Strategy | `{Name}Strategy` | `JwtCookieStrategy` |
+| Worker | `{Name}WorkerService` | `EmailWorkerService` |
 
 ## Tokens
 

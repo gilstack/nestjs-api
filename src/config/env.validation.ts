@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsEnum, IsOptional, validateSync } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsOptional, IsBoolean, MinLength, validateSync } from 'class-validator';
 import { plainToInstance, Transform } from 'class-transformer';
 
 enum Environment {
@@ -37,6 +37,56 @@ export class EnvironmentVariables {
     @IsNumber()
     @IsOptional()
     REDIS_PORT?: number;
+
+    // Auth
+    @IsString()
+    @MinLength(32)
+    ACCESS_SECRET: string;
+
+    @IsString()
+    ACCESS_EXPIRES_IN: string = '10m';
+
+    @IsString()
+    @MinLength(32)
+    REFRESH_SECRET: string;
+
+    @IsString()
+    REFRESH_EXPIRES_IN: string = '1d';
+
+    @IsString()
+    MAGIC_LINK_URL: string;
+
+    @Transform(({ value }) => parseInt(value, 10))
+    @IsNumber()
+    MAGIC_LINK_EXPIRES_IN: number = 1800;
+
+    @IsString()
+    @IsOptional()
+    COOKIE_DOMAIN?: string;
+
+    @Transform(({ value }) => value === 'true')
+    @IsBoolean()
+    @IsOptional()
+    COOKIE_SECURE?: boolean;
+
+    // Email
+    @IsString()
+    SMTP_HOST: string = 'localhost';
+
+    @Transform(({ value }) => parseInt(value, 10))
+    @IsNumber()
+    SMTP_PORT: number = 1025;
+
+    @IsString()
+    @IsOptional()
+    SMTP_USER?: string;
+
+    @IsString()
+    @IsOptional()
+    SMTP_PASS?: string;
+
+    @IsString()
+    SMTP_FROM: string = 'noreply@storagie.app';
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {

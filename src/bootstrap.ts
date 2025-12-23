@@ -8,6 +8,7 @@ import {
 import { Reflector } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
 import { join } from 'node:path'
+import fastifyCookie from '@fastify/cookie'
 
 // filters
 // import { DomainExceptionFilter } from '@shared/filters'
@@ -32,6 +33,9 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
         methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
         credentials: true
     })
+
+    // Cookie Parser
+    await app.register(fastifyCookie)
 
     // Global Validation Pipe
     app.useGlobalPipes(

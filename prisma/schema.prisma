@@ -40,7 +40,7 @@ model User {
   bio   String?
 
   // controls
-  role   UserRole   @default(USER)
+  role   UserRole   @default(GUEST)
   status UserStatus @default(PENDING)
 
   verifiedAt DateTime? @map("verified_at")
@@ -50,6 +50,7 @@ model User {
 
   // relations
   accounts Account[]
+  session  Session?
 
   // indexes
   @@unique([username, tag])
@@ -78,4 +79,31 @@ model Account {
   // indexes
   @@unique([provider, providerId])
   @@index([userId])
+}
+
+model MagicLinkToken {
+  id        String    @id @default(uuid())
+  email     String
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([email])
+  @@index([expiresAt])
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  userId           String   @unique @map("user_id")
+  refreshTokenHash String   @map("refresh_token_hash")
+  userAgent        String?  @map("user_agent")
+  ipAddress        String?  @map("ip_address")
+  expiresAt        DateTime @map("expires_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
 }

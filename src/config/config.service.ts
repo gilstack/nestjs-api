@@ -5,6 +5,8 @@ import type { DatabaseConfig } from './configs/database.config';
 import type { CacheConfig } from './configs/cache.config';
 import type { QueueConfig } from './configs/queue.config';
 import type { LoggingConfig } from './configs/logging.config';
+import type { AuthConfig } from './configs/auth.config';
+import type { EmailConfig } from './configs/email.config';
 
 @Injectable()
 export class TypedConfigService {
@@ -30,7 +32,16 @@ export class TypedConfigService {
         return this.configService.get<LoggingConfig>('logging')!;
     }
 
+    get auth(): AuthConfig {
+        return this.configService.get<AuthConfig>('auth')!;
+    }
+
+    get email(): EmailConfig {
+        return this.configService.get<EmailConfig>('email')!;
+    }
+
     get<T>(key: string): T | undefined {
         return this.configService.get<T>(key);
     }
 }
+

@@ -1,6 +1,6 @@
 # Infrastructure Documentation
 
-This documentation covers the infrastructure layer of the Storagie API, including configuration, database, cache, queue, and logging systems.
+This documentation covers the infrastructure layer of the Storagie API, including configuration, database, cache, queue, logging, authentication, and email systems.
 
 ## Table of Contents
 
@@ -10,6 +10,8 @@ This documentation covers the infrastructure layer of the Storagie API, includin
 4. [Cache Layer](./cache.md)
 5. [Queue Layer](./queue.md)
 6. [Logging System](./logging.md)
+7. [Authentication System](./auth.md)
+8. [Email System](./email.md)
 
 ## Quick Reference
 
@@ -19,6 +21,7 @@ This documentation covers the infrastructure layer of the Storagie API, includin
 | Cache | `ICacheService` | `RedisCacheService` / `MemoryCacheService` | `CACHE_SERVICE` |
 | Queue | `IQueueService` | `BullMQQueueService` | `QUEUE_SERVICE` |
 | Logging | `ILogger` | `PinoLoggerService` | `LOGGER_SERVICE` |
+| Email | `IEmailService` | `NodemailerEmailService` | `EMAIL_SERVICE` |
 
 ## Directory Structure
 
@@ -30,10 +33,17 @@ src/
 │   ├── env.validation.ts       # Environment validation
 │   └── configs/                # Modular configs
 │       ├── app.config.ts
+│       ├── auth.config.ts      # JWT, cookies, magic link
 │       ├── cache.config.ts
 │       ├── database.config.ts
+│       ├── email.config.ts     # SMTP settings
 │       ├── logging.config.ts
 │       └── queue.config.ts
+├── modules/
+│   └── auth/                   # Authentication module
+│       ├── application/        # Use cases, DTOs, services
+│       ├── domain/             # Entities, repository interfaces
+│       └── infrastructure/     # Controllers, guards, strategies
 └── shared/
     ├── constants/
     │   └── injection-tokens.ts # DI tokens
@@ -41,5 +51,7 @@ src/
         ├── database/
         ├── cache/
         ├── queue/
-        └── logging/
+        ├── logging/
+        └── email/              # Email service and templates
 ```
+

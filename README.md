@@ -13,6 +13,8 @@ Backend API for the Storagie application built with NestJS.
 | Cache | Redis |
 | Queue | BullMQ |
 | Logging | Pino |
+| Auth | Magic Link (JWT) |
+| Email | Nodemailer + HBS |
 
 ## Quick Start
 
@@ -53,14 +55,16 @@ The API will be available at `http://localhost:3000`.
 ```
 src/
 ├── config/           # Configuration system
-├── modules/          # Feature modules
+├── modules/
+│   └── auth/         # Authentication (Magic Link)
 └── shared/
     ├── constants/    # DI tokens
     └── infrastructure/
         ├── database/ # Prisma
         ├── cache/    # Redis/Memory
         ├── queue/    # BullMQ
-        └── logging/  # Pino
+        ├── logging/  # Pino
+        └── email/    # Nodemailer + HBS
 ```
 
 ## Documentation
@@ -73,6 +77,8 @@ Detailed documentation is available in the `/docs` directory:
 - [Cache Layer](./docs/cache.md)
 - [Queue Layer](./docs/queue.md)
 - [Logging System](./docs/logging.md)
+- [Authentication System](./docs/auth.md)
+- [Email System](./docs/email.md)
 
 ## Development Guidelines
 
@@ -88,6 +94,9 @@ cp .env.example .env
 
 Required variables:
 - `DATABASE_URL` - PostgreSQL connection string
+- `ACCESS_SECRET` - JWT access token secret (min 32 chars)
+- `REFRESH_SECRET` - JWT refresh token secret (min 32 chars)
+- `MAGIC_LINK_URL` - Frontend magic link callback URL
 
 ## License
 

@@ -4,6 +4,8 @@ import { DatabaseModule } from '@shared/infrastructure/database/database.module'
 import { CacheModule } from '@shared/infrastructure/cache/cache.module';
 import { QueueModule } from '@shared/infrastructure/queue/queue.module';
 import { LoggingModule } from '@shared/infrastructure/logging/logging.module';
+import { EmailModule } from '@shared/infrastructure/email/email.module';
+import { AuthModule } from '@modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +14,9 @@ import { LoggingModule } from '@shared/infrastructure/logging/logging.module';
     DatabaseModule,
     CacheModule,
     QueueModule,
+    EmailModule,
+    AuthModule,
   ],
 })
 export class AppModule { }
+

@@ -95,5 +95,24 @@ src/modules/{feature}/
 └── infrastructure/
     ├── controllers/
     ├── repositories/        # Implementations
+    ├── guards/              # Auth guards
+    ├── decorators/          # Custom decorators
+    ├── strategies/          # Passport strategies
     └── mappers/
 ```
+
+## Authentication Pattern
+
+Use guards and decorators for protected routes:
+
+```typescript
+@Controller('resource')
+export class ResourceController {
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  findAll(@CurrentUser() user: RequestUser) {
+    return this.service.findAll(user.userId);
+  }
+}
+```
+
