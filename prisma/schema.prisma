@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountProvider {
+  EMAIL
+  GOOGLE
+  GITHUB
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  DELETED
+  SUSPENDED
+  BANNED
+}
+
+enum UserRole {
+  GUEST
+  USER
+  MANAGER
+  ADMIN
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String
+  tag      String
+
+  // profile
+  name  String?
+  image String?
+  bio   String?
+
+  // controls
+  role   UserRole   @default(USER)
+  status UserStatus @default(PENDING)
+
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  // relations
+  accounts Account[]
+
+  // indexes
+  @@unique([username, tag])
+  @@index([role, status])
+}
+
+model Account {
+  id     String @id @default(uuid())
+  userId String @map("user_id")
+
+  // identifier
+  identifier String @unique
+
+  // provider
+  provider   AccountProvider @default(EMAIL)
+  providerId String?         @map("provider_id")
+
+  // timestamps
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  // relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // indexes
+  @@unique([provider, providerId])
+  @@index([userId])
+}
