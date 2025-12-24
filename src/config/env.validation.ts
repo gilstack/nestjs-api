@@ -1,110 +1,118 @@
-import { IsString, IsNumber, IsEnum, IsOptional, IsBoolean, MinLength, validateSync } from 'class-validator';
 import { plainToInstance, Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MinLength,
+  validateSync,
+} from 'class-validator';
 
 enum Environment {
-    Development = 'development',
-    Production = 'production',
-    Test = 'test',
+  Development = 'development',
+  Production = 'production',
+  Test = 'test',
 }
 
 export class EnvironmentVariables {
-    @IsEnum(Environment)
-    NODE_ENV: Environment = Environment.Development;
+  @IsEnum(Environment)
+  NODE_ENV: Environment = Environment.Development;
 
-    @Transform(({ value }) => parseInt(value, 10))
-    @IsNumber()
-    PORT: number = 3000;
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsNumber()
+  PORT: number = 3000;
 
-    @IsString()
-    API_PREFIX: string = 'api';
+  @IsString()
+  API_PREFIX: string = 'api';
 
-    @IsString()
-    @IsOptional()
-    ADMIN_URL?: string;
+  @IsString()
+  @IsOptional()
+  ADMIN_URL?: string;
 
-    @IsString()
-    @IsOptional()
-    FRONTEND_URL?: string;
+  @IsString()
+  @IsOptional()
+  FRONTEND_URL?: string;
 
-    @IsString()
-    DATABASE_URL: string;
+  @IsString()
+  DATABASE_URL: string;
 
-    @IsString()
-    @IsOptional()
-    REDIS_HOST?: string;
+  @IsString()
+  @IsOptional()
+  REDIS_HOST?: string;
 
-    @Transform(({ value }) => parseInt(value, 10))
-    @IsNumber()
-    @IsOptional()
-    REDIS_PORT?: number;
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsNumber()
+  @IsOptional()
+  REDIS_PORT?: number;
 
-    // Auth
-    @IsString()
-    @MinLength(32)
-    ACCESS_SECRET: string;
+  // Auth
+  @IsString()
+  @MinLength(32)
+  ACCESS_SECRET: string;
 
-    @IsString()
-    ACCESS_EXPIRES_IN: string = '10m';
+  @IsString()
+  ACCESS_EXPIRES_IN: string = '10m';
 
-    @IsString()
-    @MinLength(32)
-    REFRESH_SECRET: string;
+  @IsString()
+  @MinLength(32)
+  REFRESH_SECRET: string;
 
-    @IsString()
-    REFRESH_EXPIRES_IN: string = '1d';
+  @IsString()
+  REFRESH_EXPIRES_IN: string = '1d';
 
-    @IsString()
-    MAGIC_LINK_URL: string;
+  @IsString()
+  MAGIC_LINK_URL: string;
 
-    @Transform(({ value }) => parseInt(value, 10))
-    @IsNumber()
-    MAGIC_LINK_EXPIRES_IN: number = 1800;
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsNumber()
+  MAGIC_LINK_EXPIRES_IN: number = 1800;
 
-    @IsString()
-    @IsOptional()
-    COOKIE_DOMAIN?: string;
+  @IsString()
+  @IsOptional()
+  COOKIE_DOMAIN?: string;
 
-    @Transform(({ value }) => value === 'true')
-    @IsBoolean()
-    @IsOptional()
-    COOKIE_SECURE?: boolean;
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @IsOptional()
+  COOKIE_SECURE?: boolean;
 
-    // Email
-    @IsString()
-    SMTP_HOST: string = 'localhost';
+  // Email
+  @IsString()
+  SMTP_HOST: string = 'localhost';
 
-    @Transform(({ value }) => parseInt(value, 10))
-    @IsNumber()
-    SMTP_PORT: number = 1025;
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsNumber()
+  SMTP_PORT: number = 1025;
 
-    @IsString()
-    @IsOptional()
-    SMTP_USER?: string;
+  @IsString()
+  @IsOptional()
+  SMTP_USER?: string;
 
-    @IsString()
-    @IsOptional()
-    SMTP_PASS?: string;
+  @IsString()
+  @IsOptional()
+  SMTP_PASS?: string;
 
-    @IsString()
-    SMTP_FROM: string = 'noreply@storagie.app';
+  @IsString()
+  SMTP_FROM: string = 'noreply@storagie.app';
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
-    const validatedConfig = plainToInstance(EnvironmentVariables, config, {
-        enableImplicitConversion: true,
-    });
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, {
+    enableImplicitConversion: true,
+  });
 
-    const errors = validateSync(validatedConfig, {
-        skipMissingProperties: false,
-    });
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
 
-    if (errors.length > 0) {
-        const errorMessages = errors
-            .map((err) => Object.values(err.constraints || {}).join(', '))
-            .join('\n');
+  if (errors.length > 0) {
+    const errorMessages = errors
+      .map((err) => Object.values(err.constraints || {}).join(', '))
+      .join('\n');
 
-        throw new Error(`Environment validation failed:\n${errorMessages}`);
-    }
+    throw new Error(`Environment validation failed:\n${errorMessages}`);
+  }
 
-    return validatedConfig;
+  return validatedConfig;
 }

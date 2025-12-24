@@ -17,13 +17,12 @@ export const EMAIL_SERVICE = Symbol('EMAIL_SERVICE');
 
 // Repositories
 export const REPOSITORY_TOKENS = {
-    USER: Symbol('USER_REPOSITORY'),
-    MAGIC_LINK_TOKEN: Symbol('MAGIC_LINK_TOKEN_REPOSITORY'),
-    SESSION: Symbol('SESSION_REPOSITORY'),
+  USER: Symbol('USER_REPOSITORY'),
+  MAGIC_LINK_TOKEN: Symbol('MAGIC_LINK_TOKEN_REPOSITORY'),
+  SESSION: Symbol('SESSION_REPOSITORY'),
 } as const;
 
 // Services
 export const SERVICE_TOKENS = {
-    USER: Symbol('USER_SERVICE'),
+  USER: Symbol('USER_SERVICE'),
 } as const;
-

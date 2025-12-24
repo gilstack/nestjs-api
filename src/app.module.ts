@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@config/config.module';
-import { DatabaseModule } from '@shared/infrastructure/database/database.module';
-import { CacheModule } from '@shared/infrastructure/cache/cache.module';
-import { QueueModule } from '@shared/infrastructure/queue/queue.module';
-import { LoggingModule } from '@shared/infrastructure/logging/logging.module';
-import { EmailModule } from '@shared/infrastructure/email/email.module';
 import { AuthModule } from '@modules/auth/auth.module';
+import { Module } from '@nestjs/common';
+import { CacheModule } from '@shared/infrastructure/cache/cache.module';
+import { DatabaseModule } from '@shared/infrastructure/database/database.module';
+import { EmailModule } from '@shared/infrastructure/email/email.module';
+import { LoggingModule } from '@shared/infrastructure/logging/logging.module';
+import { QueueModule } from '@shared/infrastructure/queue/queue.module';
 
 @Module({
   imports: [
@@ -18,5 +18,4 @@ import { AuthModule } from '@modules/auth/auth.module';
     AuthModule,
   ],
 })
-export class AppModule { }
-
+export class AppModule {}

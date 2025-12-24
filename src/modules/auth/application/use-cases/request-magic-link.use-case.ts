@@ -1,52 +1,55 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { REPOSITORY_TOKENS, LOGGER_SERVICE, QUEUE_SERVICE } from '@shared/constants/injection-tokens';
-import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
+import type { TypedConfigService } from '@config/config.service';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  LOGGER_SERVICE,
+  QUEUE_SERVICE,
+  REPOSITORY_TOKENS,
+} from '@shared/constants/injection-tokens';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queue.interface';
-import { TokenService } from '../services/token.service';
-import { TypedConfigService } from '@config/config.service';
+import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 import type { RequestMagicLinkDto } from '../dtos';
+import type { TokenService } from '../services/token.service';
 
 @Injectable()
 export class RequestMagicLinkUseCase {
-    constructor(
-        @Inject(REPOSITORY_TOKENS.MAGIC_LINK_TOKEN)
-        private readonly magicLinkTokenRepository: IMagicLinkTokenRepository,
-        @Inject(QUEUE_SERVICE) private readonly queueService: IQueueService,
-        @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
-        private readonly tokenService: TokenService,
-        private readonly config: TypedConfigService,
-    ) { }
+  constructor(
+    @Inject(REPOSITORY_TOKENS.MAGIC_LINK_TOKEN)
+    private readonly magicLinkTokenRepository: IMagicLinkTokenRepository,
+    @Inject(QUEUE_SERVICE) private readonly queueService: IQueueService,
+    @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
+    private readonly tokenService: TokenService,
+    private readonly config: TypedConfigService,
+  ) {}
 
-    async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
-        const { email } = dto;
-        const normalizedEmail = email.toLowerCase().trim();
+  async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
+    const { email } = dto;
+    const normalizedEmail = email.toLowerCase().trim();
 
-        // Generate random token and hash
-        const token = this.tokenService.generateRandomToken();
-        const tokenHash = await this.tokenService.hashToken(token);
+    // Generate random token and hash
+    const token = this.tokenService.generateRandomToken();
+    const tokenHash = await this.tokenService.hashToken(token);
 
-        // Calculate expiration
-        const expiresInSeconds = this.config.auth.magicLinkExpiresIn;
-        const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+    // Calculate expiration
+    const expiresInSeconds = this.config.auth.magicLinkExpiresIn;
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
-        // Save token hash to database
-        await this.magicLinkTokenRepository.create(normalizedEmail, tokenHash, expiresAt);
+    // Save token hash to database
+    await this.magicLinkTokenRepository.create(normalizedEmail, tokenHash, expiresAt);
 
-        // Build magic link URL
-        const magicLinkUrl = `${this.config.auth.magicLinkUrl}?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
+    // Build magic link URL
+    const magicLinkUrl = `${this.config.auth.magicLinkUrl}?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
 
-        // Queue email for async sending
-        await this.queueService.add('email', 'magic-link', {
-            email: normalizedEmail,
-            magicLinkUrl,
-            expiresInMinutes: Math.floor(expiresInSeconds / 60),
-        });
+    // Queue email for async sending
+    await this.queueService.add('email', 'magic-link', {
+      email: normalizedEmail,
+      magicLinkUrl,
+      expiresInMinutes: Math.floor(expiresInSeconds / 60),
+    });
 
-        this.logger.info('Magic link requested', { email: normalizedEmail });
-        this.logger.audit('MAGIC_LINK_REQUEST', 'system', 'MagicLinkToken', { email: normalizedEmail });
+    this.logger.info('Magic link requested', { email: normalizedEmail });
+    this.logger.audit('MAGIC_LINK_REQUEST', 'system', 'MagicLinkToken', { email: normalizedEmail });
 
-        return { message: 'Se o email estiver cadastrado, você receberá um link de acesso.' };
-    }
+    return { message: 'Se o email estiver cadastrado, você receberá um link de acesso.' };
+  }
 }
-

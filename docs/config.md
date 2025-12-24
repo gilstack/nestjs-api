@@ -137,9 +137,9 @@ interface LoggingConfig {
 ```typescript
 interface AuthConfig {
   accessSecret: string;       // ACCESS_SECRET (min 32 chars)
-  accessExpiresIn: string;    // ACCESS_EXPIRES_IN (e.g., '10m')
+  accessExpiresIn: number;    // ACCESS_EXPIRES_IN (minutes, default: 10)
   refreshSecret: string;      // REFRESH_SECRET (min 32 chars)
-  refreshExpiresIn: string;   // REFRESH_EXPIRES_IN (e.g., '1d')
+  refreshExpiresIn: number;   // REFRESH_EXPIRES_IN (days, default: 7)
   magicLinkUrl: string;       // MAGIC_LINK_URL
   magicLinkExpiresIn: number; // MAGIC_LINK_EXPIRES_IN (seconds)
   cookieDomain: string;       // COOKIE_DOMAIN

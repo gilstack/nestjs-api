@@ -1,12 +1,11 @@
 import 'reflect-metadata';
+import { validateEnv } from '@config/env.validation';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
+import { startupLogger } from '@shared/infrastructure/logging/startup-logger';
 import { Logger } from 'nestjs-pino';
-
 import { AppModule } from './app.module';
 import { bootstrap } from './bootstrap';
-import { startupLogger } from '@shared/infrastructure/logging/startup-logger';
-import { validateEnv } from '@config/env.validation';
 
 const main = async () => {
   startupLogger.info('Validating environment variables...');

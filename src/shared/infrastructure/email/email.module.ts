@@ -5,14 +5,13 @@ import { EmailWorkerService } from './workers/email-worker.service';
 
 @Global()
 @Module({
-    providers: [
-        {
-            provide: EMAIL_SERVICE,
-            useClass: NodemailerEmailService,
-        },
-        EmailWorkerService,
-    ],
-    exports: [EMAIL_SERVICE],
+  providers: [
+    {
+      provide: EMAIL_SERVICE,
+      useClass: NodemailerEmailService,
+    },
+    EmailWorkerService,
+  ],
+  exports: [EMAIL_SERVICE],
 })
-export class EmailModule { }
-
+export class EmailModule {}

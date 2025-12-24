@@ -4,13 +4,13 @@ import { PrismaService } from './prisma/prisma.service';
 
 @Global()
 @Module({
-    providers: [
-        {
-            provide: DATABASE_SERVICE,
-            useClass: PrismaService,
-        },
-        PrismaService,
-    ],
-    exports: [DATABASE_SERVICE, PrismaService],
+  providers: [
+    {
+      provide: DATABASE_SERVICE,
+      useClass: PrismaService,
+    },
+    PrismaService,
+  ],
+  exports: [DATABASE_SERVICE, PrismaService],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

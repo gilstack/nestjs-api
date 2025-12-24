@@ -61,8 +61,8 @@ Content-Type: application/json
 
 | Token | Payload | TTL | Cookie Path |
 |-------|---------|-----|-------------|
-| Access | `sub`, `email`, `role` | 10 min | `/` |
-| Refresh | `sub`, `sid` | 1 day | `/api/auth/refresh` |
+| Access | `sub`, `email`, `role` | 10 min (default) | `/` |
+| Refresh | `sub`, `sid` | 7 days (default) | `/api/auth/refresh` |
 | Magic Link | Random hex | 30 min | N/A |
 
 ### Cookies
@@ -70,7 +70,7 @@ Content-Type: application/json
 Both tokens are delivered as HttpOnly, Secure, SameSite=Strict cookies:
 
 ```typescript
-response.cookie('access_token', accessToken, {
+response.cookie('access', accessToken, {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: 'strict',
@@ -125,10 +125,10 @@ export class ProtectedController {
 ACCESS_SECRET=your-super-secret-access-key-min-32-chars
 REFRESH_SECRET=your-super-secret-refresh-key-min-32-chars
 
-# Token Expiration
-ACCESS_EXPIRES_IN=10m
-REFRESH_EXPIRES_IN=1d
-MAGIC_LINK_EXPIRES_IN=1800  # 30 minutes in seconds
+# Token Expiration (numbers only)
+ACCESS_EXPIRES_IN=10          # minutes
+REFRESH_EXPIRES_IN=7          # days
+MAGIC_LINK_EXPIRES_IN=1800    # seconds (30 min)
 
 # Magic Link URL (frontend callback)
 MAGIC_LINK_URL=http://localhost:3000/auth/verify
