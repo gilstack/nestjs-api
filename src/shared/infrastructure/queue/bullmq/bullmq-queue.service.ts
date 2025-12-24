@@ -1,4 +1,4 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { CACHE_SERVICE } from '@shared/constants/injection-tokens';
 import { Queue } from 'bullmq';

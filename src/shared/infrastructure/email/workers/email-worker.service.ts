@@ -1,4 +1,4 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { EMAIL_SERVICE, LOGGER_SERVICE } from '@shared/constants/injection-tokens';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';

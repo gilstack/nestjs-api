@@ -1,4 +1,4 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Injectable, type OnModuleDestroy } from '@nestjs/common';
 import Redis from 'ioredis';
 import type { ICacheService } from '../interfaces/cache.interface';

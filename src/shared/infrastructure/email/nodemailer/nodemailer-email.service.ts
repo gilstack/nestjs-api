@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Injectable, type OnModuleInit } from '@nestjs/common';
 import * as Handlebars from 'handlebars';
 import { createTransport, type Transporter } from 'nodemailer';

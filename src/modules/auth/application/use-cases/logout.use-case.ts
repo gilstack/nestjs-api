@@ -1,4 +1,4 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';

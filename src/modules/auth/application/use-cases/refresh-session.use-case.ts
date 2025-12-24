@@ -1,12 +1,12 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
-import type { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
+import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { ISessionRepository } from '../../domain/repositories/session.repository';
 import type { AuthResponseDto } from '../dtos';
-import type { TokenService } from '../services/token.service';
+import { TokenService } from '../services/token.service';
 
 @Injectable()
 export class RefreshSessionUseCase {

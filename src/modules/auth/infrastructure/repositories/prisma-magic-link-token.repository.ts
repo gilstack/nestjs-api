@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
+import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import { MagicLinkToken } from '../../domain/entities/magic-link-token.entity';
 import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 

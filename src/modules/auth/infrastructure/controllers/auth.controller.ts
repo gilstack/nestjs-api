@@ -15,10 +15,10 @@ import type {
   RequestMagicLinkDto,
   VerifyMagicLinkDto,
 } from '../../application/dtos';
-import type { LogoutUseCase } from '../../application/use-cases/logout.use-case';
-import type { RefreshSessionUseCase } from '../../application/use-cases/refresh-session.use-case';
-import type { RequestMagicLinkUseCase } from '../../application/use-cases/request-magic-link.use-case';
-import type { VerifyMagicLinkUseCase } from '../../application/use-cases/verify-magic-link.use-case';
+import { LogoutUseCase } from '../../application/use-cases/logout.use-case';
+import { RefreshSessionUseCase } from '../../application/use-cases/refresh-session.use-case';
+import { RequestMagicLinkUseCase } from '../../application/use-cases/request-magic-link.use-case';
+import { VerifyMagicLinkUseCase } from '../../application/use-cases/verify-magic-link.use-case';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import type { RequestUser } from '../strategies/jwt-cookie.strategy';
@@ -30,7 +30,7 @@ export class AuthController {
     private readonly verifyMagicLinkUseCase: VerifyMagicLinkUseCase,
     private readonly refreshSessionUseCase: RefreshSessionUseCase,
     private readonly logoutUseCase: LogoutUseCase,
-  ) {}
+  ) { }
 
   @Post('magic-link')
   @HttpCode(HttpStatus.OK)

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ConfigService as NestConfigService } from '@nestjs/config';
+import { ConfigService as NestConfigService } from '@nestjs/config';
 import type { AppConfig } from './configs/app.config';
 import type { AuthConfig } from './configs/auth.config';
 import type { CacheConfig } from './configs/cache.config';
@@ -10,7 +10,7 @@ import type { QueueConfig } from './configs/queue.config';
 
 @Injectable()
 export class TypedConfigService {
-  constructor(private configService: NestConfigService) {}
+  constructor(private configService: NestConfigService) { }
 
   get app(): AppConfig {
     return this.configService.get<AppConfig>('app')!;

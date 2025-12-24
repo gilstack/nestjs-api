@@ -1,4 +1,4 @@
-import type { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable } from '@nestjs/common';
 import {
   LOGGER_SERVICE,
@@ -9,7 +9,7 @@ import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.i
 import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queue.interface';
 import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 import type { RequestMagicLinkDto } from '../dtos';
-import type { TokenService } from '../services/token.service';
+import { TokenService } from '../services/token.service';
 
 @Injectable()
 export class RequestMagicLinkUseCase {
