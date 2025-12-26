@@ -1,10 +1,15 @@
+import { Inject, Injectable } from '@nestjs/common';
+
+// internal
 import { TypedConfigService } from '@config/config.service';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+
+// relatives
 import type { MagicLinkToken } from '../../domain/entities/magic-link-token.entity';
+import { AuthException } from '../../domain/exceptions/auth.exception';
 import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 import type { ISessionRepository } from '../../domain/repositories/session.repository';
 import type { AuthResponseDto, VerifyMagicLinkDto } from '../dtos';
@@ -21,7 +26,7 @@ export class VerifyMagicLinkUseCase {
     private readonly tokenService: TokenService,
     private readonly prisma: PrismaService,
     private readonly config: TypedConfigService,
-  ) {}
+  ) { }
 
   async execute(
     dto: VerifyMagicLinkDto,
@@ -36,7 +41,7 @@ export class VerifyMagicLinkUseCase {
     const validTokens = await this.magicLinkTokenRepository.findValidByEmail(normalizedEmail);
 
     if (validTokens.length === 0) {
-      throw new UnauthorizedException('Link inválido ou expirado');
+      throw AuthException.invalidToken();
     }
 
     // Find matching token by comparing hashes
@@ -50,14 +55,14 @@ export class VerifyMagicLinkUseCase {
     }
 
     if (!matchedToken) {
-      throw new UnauthorizedException('Link inválido ou expirado');
+      throw AuthException.invalidToken();
     }
 
     // Mark token as used
     await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
 
     // Find or create user
-    let user = await this.prisma.prisma.user.findFirst({
+    let user = await this.prisma.user.findFirst({
       where: {
         accounts: {
           some: {
@@ -76,7 +81,7 @@ export class VerifyMagicLinkUseCase {
       const username = normalizedEmail.split('@')[0];
       const tag = Math.random().toString(36).substring(2, 6).toUpperCase();
 
-      user = await this.prisma.prisma.user.create({
+      user = await this.prisma.user.create({
         data: {
           username,
           tag,
@@ -100,7 +105,7 @@ export class VerifyMagicLinkUseCase {
 
     // Activate user if pending (first login)
     if (user.status === 'PENDING') {
-      user = await this.prisma.prisma.user.update({
+      user = await this.prisma.user.update({
         where: { id: user.id },
         data: {
           status: 'ACTIVE',

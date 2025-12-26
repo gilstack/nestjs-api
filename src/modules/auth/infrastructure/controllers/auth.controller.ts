@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+
+// relatives
 import type {
   AuthResponseDto,
   RequestMagicLinkDto,

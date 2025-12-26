@@ -1,8 +1,13 @@
-import { TypedConfigService } from '@config/config.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { FastifyRequest } from 'fastify';
 import { Strategy } from 'passport-jwt';
+
+// internal
+import { TypedConfigService } from '@config/config.service';
+
+// relatives
+import { AuthException } from '../../domain/exceptions/auth.exception';
 
 export interface JwtPayload {
   sub: string;
@@ -31,7 +36,7 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: JwtPayload): Promise<RequestUser> {
     if (!payload.sub) {
-      throw new UnauthorizedException('Token inválido');
+      throw AuthException.invalidToken();
     }
 
     return {
@@ -41,3 +46,4 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt') {
     };
   }
 }
+

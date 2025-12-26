@@ -1,9 +1,14 @@
+import { Inject, Injectable } from '@nestjs/common';
+
+// internal
 import { TypedConfigService } from '@config/config.service';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+
+// relatives
+import { AuthException } from '../../domain/exceptions/auth.exception';
 import type { ISessionRepository } from '../../domain/repositories/session.repository';
 import type { AuthResponseDto } from '../dtos';
 import { TokenService } from '../services/token.service';
@@ -17,33 +22,29 @@ export class RefreshSessionUseCase {
     private readonly tokenService: TokenService,
     private readonly prisma: PrismaService,
     private readonly config: TypedConfigService,
-  ) {}
+  ) { }
 
   async execute(request: FastifyRequest, response: FastifyReply): Promise<AuthResponseDto> {
-    // Get refresh token from cookie
     const refreshTokenJwt = (request.cookies as Record<string, string>)?.refresh;
 
     if (!refreshTokenJwt) {
-      throw new UnauthorizedException('Refresh token não encontrado');
+      throw AuthException.refreshTokenMissing();
     }
 
-    // Verify JWT
     let payload: ReturnType<typeof this.tokenService.verifyRefreshToken>;
     try {
       payload = this.tokenService.verifyRefreshToken(refreshTokenJwt);
     } catch {
-      throw new UnauthorizedException('Refresh token inválido');
+      throw AuthException.refreshTokenInvalid();
     }
 
-    // Find session
     const session = await this.sessionRepository.findById(payload.sid);
 
     if (!session || session.isExpired()) {
-      throw new UnauthorizedException('Sessão expirada');
+      throw AuthException.sessionExpired();
     }
 
-    // Get user
-    const user = await this.prisma.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id: session.userId },
       include: {
         accounts: {
@@ -54,12 +55,11 @@ export class RefreshSessionUseCase {
     });
 
     if (!user || user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('Usuário inativo');
+      throw AuthException.userInactive();
     }
 
     const email = user.accounts[0]?.identifier || '';
 
-    // Generate new access token
     const accessToken = this.tokenService.generateAccessToken({
       sub: user.id,
       email,
@@ -67,7 +67,6 @@ export class RefreshSessionUseCase {
       type: 'access',
     });
 
-    // Set new access token cookie
     const isSecure = this.config.auth.cookieSecure;
 
     response.cookie('access', accessToken, {
@@ -94,3 +93,4 @@ export class RefreshSessionUseCase {
     };
   }
 }
+

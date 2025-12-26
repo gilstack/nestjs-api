@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+
+// internal
 import { REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 
-// Application
+// relatives
 import { TokenService } from './application/services/token.service';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { RefreshSessionUseCase } from './application/use-cases/refresh-session.use-case';
@@ -11,7 +13,6 @@ import { RequestMagicLinkUseCase } from './application/use-cases/request-magic-l
 import { VerifyMagicLinkUseCase } from './application/use-cases/verify-magic-link.use-case';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
-// Infrastructure
 import { PrismaMagicLinkTokenRepository } from './infrastructure/repositories/prisma-magic-link-token.repository';
 import { PrismaSessionRepository } from './infrastructure/repositories/prisma-session.repository';
 import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strategy';
@@ -47,4 +48,4 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
   ],
   exports: [JwtAuthGuard, TokenService],
 })
-export class AuthModule {}
+export class AuthModule { }

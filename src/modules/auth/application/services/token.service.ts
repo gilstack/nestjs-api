@@ -1,8 +1,10 @@
 import { randomBytes } from 'node:crypto';
-import { TypedConfigService } from '@config/config.service';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+
+// internal
+import { TypedConfigService } from '@config/config.service';
 
 export interface AccessTokenPayload {
   sub: string;
@@ -20,7 +22,7 @@ export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly config: TypedConfigService,
-  ) {}
+  ) { }
 
   generateRandomToken(): string {
     return randomBytes(32).toString('hex');

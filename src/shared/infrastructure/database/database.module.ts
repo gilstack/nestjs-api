@@ -13,4 +13,5 @@ import { PrismaService } from './prisma/prisma.service';
   ],
   exports: [DATABASE_SERVICE, PrismaService],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
+

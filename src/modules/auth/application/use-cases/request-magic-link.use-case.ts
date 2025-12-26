@@ -1,5 +1,7 @@
-import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable } from '@nestjs/common';
+
+// internal
+import { TypedConfigService } from '@config/config.service';
 import {
   LOGGER_SERVICE,
   QUEUE_SERVICE,
@@ -7,6 +9,8 @@ import {
 } from '@shared/constants/injection-tokens';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queue.interface';
+
+// relatives
 import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 import type { RequestMagicLinkDto } from '../dtos';
 import { TokenService } from '../services/token.service';
@@ -20,7 +24,7 @@ export class RequestMagicLinkUseCase {
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
     private readonly tokenService: TokenService,
     private readonly config: TypedConfigService,
-  ) {}
+  ) { }
 
   async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
     const { email } = dto;

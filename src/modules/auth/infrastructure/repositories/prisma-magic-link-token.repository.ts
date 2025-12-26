@@ -5,10 +5,10 @@ import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-
 
 @Injectable()
 export class PrismaMagicLinkTokenRepository implements IMagicLinkTokenRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(email: string, tokenHash: string, expiresAt: Date): Promise<MagicLinkToken> {
-    const record = await this.prisma.prisma.magicLinkToken.create({
+    const record = await this.prisma.magicLinkToken.create({
       data: {
         email,
         tokenHash,
@@ -27,7 +27,7 @@ export class PrismaMagicLinkTokenRepository implements IMagicLinkTokenRepository
   }
 
   async findValidByEmail(email: string): Promise<MagicLinkToken[]> {
-    const records = await this.prisma.prisma.magicLinkToken.findMany({
+    const records = await this.prisma.magicLinkToken.findMany({
       where: {
         email,
         expiresAt: { gt: new Date() },
@@ -50,14 +50,14 @@ export class PrismaMagicLinkTokenRepository implements IMagicLinkTokenRepository
   }
 
   async markAsUsed(id: string): Promise<void> {
-    await this.prisma.prisma.magicLinkToken.update({
+    await this.prisma.magicLinkToken.update({
       where: { id },
       data: { usedAt: new Date() },
     });
   }
 
   async deleteExpired(): Promise<number> {
-    const result = await this.prisma.prisma.magicLinkToken.deleteMany({
+    const result = await this.prisma.magicLinkToken.deleteMany({
       where: { expiresAt: { lt: new Date() } },
     });
 

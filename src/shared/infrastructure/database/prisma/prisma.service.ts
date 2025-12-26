@@ -4,17 +4,11 @@ import { PrismaClient } from '@prisma/client';
 import type { IDatabaseService } from '../interfaces/database.interface';
 
 @Injectable()
-export class PrismaService implements IDatabaseService, OnModuleInit, OnModuleDestroy {
-  private client: PrismaClient;
-
-  constructor(private readonly config: TypedConfigService) {
-    this.client = new PrismaClient({
+export class PrismaService extends PrismaClient implements IDatabaseService, OnModuleInit, OnModuleDestroy {
+  constructor(config: TypedConfigService) {
+    super({
       log: config.database.logging ? ['query', 'error', 'warn'] : ['error'],
     });
-  }
-
-  get prisma(): PrismaClient {
-    return this.client;
   }
 
   async onModuleInit() {
@@ -26,19 +20,20 @@ export class PrismaService implements IDatabaseService, OnModuleInit, OnModuleDe
   }
 
   async connect(): Promise<void> {
-    await this.client.$connect();
+    await this.$connect();
   }
 
   async disconnect(): Promise<void> {
-    await this.client.$disconnect();
+    await this.$disconnect();
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.client.$queryRaw`SELECT 1`;
+      await this.$queryRaw`SELECT 1`;
       return true;
     } catch {
       return false;
     }
   }
 }
+

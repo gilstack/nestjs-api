@@ -89,6 +89,20 @@ response.cookie('access', accessToken, {
 | POST | `/api/auth/logout` | ✅ | Logout (clear session) |
 | POST | `/api/auth/me` | ✅ | Get current user |
 
+## Error Codes
+
+The auth module uses custom exceptions with the following codes:
+
+| Code | Status | Description |
+|------|--------|-------------|
+| `AUTH_INVALID_TOKEN` | 401 | Token inválido ou expirado |
+| `AUTH_TOKEN_EXPIRED` | 401 | Token expirado |
+| `AUTH_REFRESH_TOKEN_MISSING` | 401 | Refresh token não encontrado |
+| `AUTH_REFRESH_TOKEN_INVALID` | 401 | Refresh token inválido |
+| `AUTH_SESSION_EXPIRED` | 401 | Sessão expirada |
+| `AUTH_USER_INACTIVE` | 403 | Usuário inativo |
+| `AUTH_USER_BLOCKED` | 403 | Usuário bloqueado |
+
 ## Usage
 
 ### Protecting Routes

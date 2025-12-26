@@ -31,28 +31,28 @@ export interface IDatabaseService {
 
 Location: `src/shared/infrastructure/database/prisma/prisma.service.ts`
 
-The service implements `IDatabaseService` and provides access to the Prisma client:
+The service extends `PrismaClient` directly and implements `IDatabaseService`:
 
 ```typescript
 @Injectable()
-export class PrismaService implements IDatabaseService, OnModuleInit, OnModuleDestroy {
-  private client: PrismaClient;
-
-  get prisma(): PrismaClient {
-    return this.client;
+export class PrismaService extends PrismaClient implements IDatabaseService, OnModuleInit, OnModuleDestroy {
+  constructor(config: TypedConfigService) {
+    super({
+      log: config.database.logging ? ['query', 'error', 'warn'] : ['error'],
+    });
   }
 
   async connect(): Promise<void> {
-    await this.client.$connect();
+    await this.$connect();
   }
 
   async disconnect(): Promise<void> {
-    await this.client.$disconnect();
+    await this.$disconnect();
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.client.$queryRaw`SELECT 1`;
+      await this.$queryRaw`SELECT 1`;
       return true;
     } catch {
       return false;
@@ -76,7 +76,7 @@ export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string) {
-    return this.prisma.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id } });
   }
 }
 ```

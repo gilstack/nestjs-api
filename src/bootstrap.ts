@@ -9,15 +9,15 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
-// filters
-// import { DomainExceptionFilter } from '@shared/filters'
-
-// swagger
-// import { document } from '@core/swagger'
+// internal
+import { LOGGER_SERVICE } from '@shared/constants/injection-tokens';
+import { HttpExceptionFilter, ResponseInterceptor } from '@shared/infrastructure/http/index';
+import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 
 export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
   const reflector = app.get(Reflector);
   const configService = app.get(ConfigService);
+  const logger = await app.resolve<ILogger>(LOGGER_SERVICE);
 
   const appConfig = configService.get('app', { infer: true })!;
 
@@ -51,10 +51,11 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
   );
 
   // Global Filters
-  // app.useGlobalFilters(new DomainExceptionFilter())
+  app.useGlobalFilters(new HttpExceptionFilter(logger));
 
   // Global Interceptors
   app.useGlobalInterceptors(
+    new ResponseInterceptor(),
     new ClassSerializerInterceptor(reflector, {
       excludeExtraneousValues: false,
     }),
@@ -64,9 +65,6 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
   app.useStaticAssets({
     root: join(__dirname, '..', 'public'),
   });
-
-  // API Documentation
-  // document(app)
 
   // Listening the application
   await app.listen(appConfig.port);
