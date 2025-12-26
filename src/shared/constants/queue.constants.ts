@@ -3,7 +3,6 @@ export const QUEUE_NAMES = {
   EMAIL: 'email',
 } as const;
 
-
 // Job Constants
 export const JOB_NAMES = {
   MAGIC_LINK: 'magic-link',

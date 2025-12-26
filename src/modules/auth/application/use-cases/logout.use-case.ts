@@ -14,7 +14,7 @@ export class LogoutUseCase {
     @Inject(REPOSITORY_TOKENS.SESSION)
     private readonly sessionRepository: ISessionRepository,
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
-  ) { }
+  ) {}
 
   async execute(userId: string, response: FastifyReply): Promise<void> {
     await this.sessionRepository.deleteByUserId(userId);
@@ -26,4 +26,3 @@ export class LogoutUseCase {
     this.logger.audit('LOGOUT', userId, 'Session', {});
   }
 }
-

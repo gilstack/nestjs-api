@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   type ArgumentsHost,
   Catch,
@@ -6,12 +7,10 @@ import {
   HttpStatus,
   Inject,
 } from '@nestjs/common';
-import type { FastifyReply, FastifyRequest } from 'fastify';
-import { randomUUID } from 'node:crypto';
-
 // internal
 import { LOGGER_SERVICE } from '@shared/constants/injection-tokens';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 // relatives
 import { AppException } from '../exceptions/app.exception';
@@ -19,7 +18,7 @@ import type { ApiErrorDetail, ApiErrorResponse } from '../types/response.types';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(@Inject(LOGGER_SERVICE) private readonly logger: ILogger) { }
+  constructor(@Inject(LOGGER_SERVICE) private readonly logger: ILogger) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
@@ -79,9 +78,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return {
         error: {
           code: this.getHttpErrorCode(status),
-          message: typeof exceptionResponse === 'string'
-            ? exceptionResponse
-            : (exceptionResponse as { message?: string }).message || 'An error occurred',
+          message:
+            typeof exceptionResponse === 'string'
+              ? exceptionResponse
+              : (exceptionResponse as { message?: string }).message || 'An error occurred',
           statusCode: status,
           details: null,
         },
@@ -101,9 +101,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     };
   }
 
-  private formatValidationErrors(
-    messages?: string[] | ApiErrorDetail[],
-  ): ApiErrorDetail[] | null {
+  private formatValidationErrors(messages?: string[] | ApiErrorDetail[]): ApiErrorDetail[] | null {
     if (!messages || !Array.isArray(messages)) {
       return null;
     }

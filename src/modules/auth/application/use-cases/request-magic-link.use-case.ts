@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-
 // internal
 import { TypedConfigService } from '@config/config.service';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   LOGGER_SERVICE,
   QUEUE_SERVICE,
@@ -25,7 +24,7 @@ export class RequestMagicLinkUseCase {
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
     private readonly tokenService: TokenService,
     private readonly config: TypedConfigService,
-  ) { }
+  ) {}
 
   async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
     const { email } = dto;

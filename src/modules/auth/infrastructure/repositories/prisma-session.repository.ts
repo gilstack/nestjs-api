@@ -8,7 +8,7 @@ import type {
 
 @Injectable()
 export class PrismaSessionRepository implements ISessionRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateSessionData): Promise<Session> {
     const record = await this.prisma.session.create({

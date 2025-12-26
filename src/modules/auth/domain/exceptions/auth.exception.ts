@@ -13,7 +13,11 @@ export type AuthErrorCode =
   | 'AUTH_UNAUTHORIZED';
 
 export class AuthException extends AppException {
-  constructor(code: AuthErrorCode, message: string, statusCode: HttpStatus = HttpStatus.UNAUTHORIZED) {
+  constructor(
+    code: AuthErrorCode,
+    message: string,
+    statusCode: HttpStatus = HttpStatus.UNAUTHORIZED,
+  ) {
     super({ code, message, statusCode });
   }
 
@@ -53,4 +57,3 @@ export class AuthException extends AppException {
     return new AuthException('AUTH_UNAUTHORIZED', 'Não autorizado');
   }
 }
-

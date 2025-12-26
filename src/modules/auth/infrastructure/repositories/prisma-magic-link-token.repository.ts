@@ -5,7 +5,7 @@ import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-
 
 @Injectable()
 export class PrismaMagicLinkTokenRepository implements IMagicLinkTokenRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(email: string, tokenHash: string, expiresAt: Date): Promise<MagicLinkToken> {
     const record = await this.prisma.magicLinkToken.create({

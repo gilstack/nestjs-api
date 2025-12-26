@@ -12,7 +12,10 @@ const extendedPrisma = basePrisma.$extends(softDeleteExtension);
 export type ExtendedPrismaClient = typeof extendedPrisma;
 
 @Injectable()
-export class PrismaService extends PrismaClient implements IDatabaseService, OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements IDatabaseService, OnModuleInit, OnModuleDestroy
+{
   private readonly extended: ExtendedPrismaClient;
 
   constructor(config: TypedConfigService) {

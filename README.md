@@ -93,6 +93,16 @@ Detailed architectural and operational documentation is available in the `/docs`
 | [Configuration](./docs/config.md) | Environment setup and validation |
 | [Queue System](./docs/queue.md) | Background job processing |
 | [Logging](./docs/logging.md) | Log aggregation and standards |
+| [API Documentation](./docs/api-docs.md) | Swagger/Scalar setup and usage |
+
+### API Reference
+
+Interactive API documentation is available at `/docs` when running the server. This documentation is powered by [Scalar](https://scalar.com/) and provides:
+
+- Complete API endpoint reference
+- Request/response schemas
+- Authentication requirements
+- Try-it-out functionality
 
 ## Development
 

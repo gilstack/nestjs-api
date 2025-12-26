@@ -1,16 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
-
 // internal
 import { TypedConfigService } from '@config/config.service';
-import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
-import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
-import type { FastifyReply, FastifyRequest } from 'fastify';
-
 // user module
 import type { User } from '@modules/user/domain/entities/user.entity';
 import { AuthProvider } from '@modules/user/domain/enums/auth-provider.enum';
 import { UserStatus } from '@modules/user/domain/enums/user-status.enum';
 import type { IUserRepository } from '@modules/user/domain/repositories/user.repository';
+import { Inject, Injectable } from '@nestjs/common';
+import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
+import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 // relatives
 import type { MagicLinkToken } from '../../domain/entities/magic-link-token.entity';
@@ -32,7 +30,7 @@ export class VerifyMagicLinkUseCase {
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
     private readonly tokenService: TokenService,
     private readonly config: TypedConfigService,
-  ) { }
+  ) {}
 
   async execute(
     dto: VerifyMagicLinkDto,

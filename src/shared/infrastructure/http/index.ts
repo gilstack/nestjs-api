@@ -1,12 +1,11 @@
 // Types
-export * from './types/response.types';
 
 // Exceptions
 export * from './exceptions/app.exception';
 export * from './exceptions/domain.exception';
+// Filters
+export * from './filters/http-exception.filter';
 
 // Interceptors
 export * from './interceptors/response.interceptor';
-
-// Filters
-export * from './filters/http-exception.filter';
+export * from './types/response.types';

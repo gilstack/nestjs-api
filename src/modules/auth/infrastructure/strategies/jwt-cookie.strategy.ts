@@ -1,10 +1,9 @@
+// internal
+import { TypedConfigService } from '@config/config.service';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { FastifyRequest } from 'fastify';
 import { Strategy } from 'passport-jwt';
-
-// internal
-import { TypedConfigService } from '@config/config.service';
 
 // relatives
 import { AuthException } from '../../domain/exceptions/auth.exception';
@@ -46,4 +45,3 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt') {
     };
   }
 }
-

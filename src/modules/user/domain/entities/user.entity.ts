@@ -1,4 +1,4 @@
-import { AuthProvider, UserRole, UserStatus } from '../enums';
+import type { AuthProvider, UserRole, UserStatus } from '../enums';
 
 export interface Account {
   id: string;

@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-
 // internal
 import { TypedConfigService } from '@config/config.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
@@ -22,7 +21,7 @@ export class RefreshSessionUseCase {
     private readonly tokenService: TokenService,
     private readonly prisma: PrismaService,
     private readonly config: TypedConfigService,
-  ) { }
+  ) {}
 
   async execute(request: FastifyRequest, response: FastifyReply): Promise<AuthResponseDto> {
     const refreshTokenJwt = (request.cookies as Record<string, string>)?.refresh;
@@ -93,4 +92,3 @@ export class RefreshSessionUseCase {
     };
   }
 }
-

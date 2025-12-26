@@ -58,4 +58,4 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
   ],
   exports: [JwtAuthGuard, TokenService],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,4 +1,20 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
+
+/**
+ * Type for models that support soft delete (have deletedAt field)
+ */
+type SoftDeletableModel = {
+  update: (args: { where: { id: string }; data: { deletedAt: Date | null } }) => Promise<unknown>;
+  findMany: (args?: unknown) => Promise<unknown>;
+  findUnique: (args: unknown) => Promise<unknown>;
+};
+
+/**
+ * Helper to get typed delegate from extension context
+ */
+function getModelDelegate<T extends SoftDeletableModel>(context: unknown): T {
+  return context as T;
+}
 
 /**
  * Prisma extension for soft delete functionality.
@@ -19,14 +35,15 @@ export const softDeleteExtension = Prisma.defineExtension({
       ): Promise<Prisma.Result<T, A, 'update'>> {
         const context = Prisma.getExtensionContext(this);
         const updateArgs = args as Prisma.Args<T, 'update'>;
+        const delegate = getModelDelegate<SoftDeletableModel>(context);
 
-        return (context as any).update({
+        return delegate.update({
           ...updateArgs,
           data: {
             ...(updateArgs.data as object),
             deletedAt: new Date(),
           },
-        });
+        }) as Promise<Prisma.Result<T, A, 'update'>>;
       },
 
       /**
@@ -38,14 +55,15 @@ export const softDeleteExtension = Prisma.defineExtension({
       ): Promise<Prisma.Result<T, A, 'update'>> {
         const context = Prisma.getExtensionContext(this);
         const updateArgs = args as Prisma.Args<T, 'update'>;
+        const delegate = getModelDelegate<SoftDeletableModel>(context);
 
-        return (context as any).update({
+        return delegate.update({
           ...updateArgs,
           data: {
             ...(updateArgs.data as object),
             deletedAt: null,
           },
-        });
+        }) as Promise<Prisma.Result<T, A, 'update'>>;
       },
 
       /**
@@ -56,7 +74,9 @@ export const softDeleteExtension = Prisma.defineExtension({
         args?: Prisma.Exact<A, Prisma.Args<T, 'findMany'>>,
       ): Promise<Prisma.Result<T, A, 'findMany'>> {
         const context = Prisma.getExtensionContext(this);
-        return (context as any).findMany(args);
+        const delegate = getModelDelegate<SoftDeletableModel>(context);
+
+        return delegate.findMany(args) as Promise<Prisma.Result<T, A, 'findMany'>>;
       },
 
       /**
@@ -67,24 +87,26 @@ export const softDeleteExtension = Prisma.defineExtension({
         args: Prisma.Exact<A, Prisma.Args<T, 'findUnique'>>,
       ): Promise<Prisma.Result<T, A, 'findUnique'>> {
         const context = Prisma.getExtensionContext(this);
-        return (context as any).findUnique(args);
+        const delegate = getModelDelegate<SoftDeletableModel>(context);
+
+        return delegate.findUnique(args) as Promise<Prisma.Result<T, A, 'findUnique'>>;
       },
     },
   },
   query: {
     user: {
-      async findMany({ model, operation, args, query }) {
+      async findMany({ args, query }) {
         args.where = { ...args.where, deletedAt: null };
         return query(args);
       },
-      async findFirst({ model, operation, args, query }) {
+      async findFirst({ args, query }) {
         args.where = { ...args.where, deletedAt: null };
         return query(args);
       },
-      async findUnique({ model, operation, args, query }) {
+      async findUnique({ args, query }) {
         return query(args);
       },
-      async count({ model, operation, args, query }) {
+      async count({ args, query }) {
         args.where = { ...args.where, deletedAt: null };
         return query(args);
       },
@@ -92,6 +114,4 @@ export const softDeleteExtension = Prisma.defineExtension({
   },
 });
 
-export type PrismaClientWithSoftDelete = ReturnType<
-  typeof softDeleteExtension
->;
+export type ExtendedPrismaClient = PrismaClient & ReturnType<typeof softDeleteExtension>;

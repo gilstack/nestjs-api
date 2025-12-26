@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   type CallHandler,
   type ExecutionContext,
@@ -5,8 +6,7 @@ import {
   type NestInterceptor,
 } from '@nestjs/common';
 import type { FastifyRequest } from 'fastify';
-import { type Observable, map } from 'rxjs';
-import { randomUUID } from 'node:crypto';
+import { map, type Observable } from 'rxjs';
 import type { ApiResponse } from '../types/response.types';
 
 @Injectable()

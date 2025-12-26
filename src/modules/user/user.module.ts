@@ -17,4 +17,4 @@ import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.
   ],
   exports: [REPOSITORY_TOKENS.USER],
 })
-export class UserModule { }
+export class UserModule {}

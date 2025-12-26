@@ -10,7 +10,7 @@ import type { QueueConfig } from './configs/queue.config';
 
 @Injectable()
 export class TypedConfigService {
-  constructor(private configService: NestConfigService) { }
+  constructor(private configService: NestConfigService) {}
 
   get app(): AppConfig {
     return this.configService.get<AppConfig>('app')!;

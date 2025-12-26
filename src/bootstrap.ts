@@ -13,6 +13,7 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { LOGGER_SERVICE } from '@shared/constants/injection-tokens';
 import { HttpExceptionFilter, ResponseInterceptor } from '@shared/infrastructure/http/index';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
+import { setupSwagger } from './shared/infrastructure/documentation/swagger.setup';
 
 export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
   const reflector = app.get(Reflector);
@@ -65,6 +66,9 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
   app.useStaticAssets({
     root: join(__dirname, '..', 'public'),
   });
+
+  // Documentation
+  setupSwagger(app);
 
   // Listening the application
   await app.listen(appConfig.port, '0.0.0.0');

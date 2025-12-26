@@ -19,7 +19,7 @@ import type { IUserRepository } from '../../domain/repositories/user.repository'
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string): Promise<User | null> {
     const user = await this.prisma.withSoftDelete.user.findFirst({
