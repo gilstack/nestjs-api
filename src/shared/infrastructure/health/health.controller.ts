@@ -9,7 +9,10 @@ import {
 // internal
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 
+import { Public } from '@modules/auth/infrastructure/decorators/public.decorator';
+
 @Controller('health')
+@Public()
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,

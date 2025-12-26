@@ -105,18 +105,37 @@ The auth module uses custom exceptions with the following codes:
 
 ## Usage
 
-### Protecting Routes
+### Global Authentication
+
+Authentication is enabled globally using `APP_GUARD`. By default, **all endpoints are protected** and require a valid Access Token.
+
+### Public Endpoints
+
+To make an endpoint public (skip authentication), use the `@Public()` decorator:
 
 ```typescript
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '@modules/auth/infrastructure/guards/jwt-auth.guard';
-import { CurrentUser } from '@modules/auth/infrastructure/decorators/current-user.decorator';
-import type { RequestUser } from '@modules/auth/infrastructure/strategies/jwt-cookie.strategy';
+import { Controller, Post } from '@nestjs/common';
+import { Public } from '@modules/auth/infrastructure/decorators/public.decorator';
 
+@Controller('auth')
+export class AuthController {
+    @Post('login')
+    @Public()
+    login() {
+        return { message: 'Public Route' };
+    }
+}
+```
+
+### Accessing User Data
+
+Since the guard validates the token globally, the user object is available in the request. Use the `@CurrentUser` decorator:
+
+```typescript
 @Controller('protected')
 export class ProtectedController {
     @Get()
-    @UseGuards(JwtAuthGuard)
+    // No @UseGuards needed - it's global!
     getProtected(@CurrentUser() user: RequestUser) {
         return { message: `Hello ${user.email}`, userId: user.userId };
     }

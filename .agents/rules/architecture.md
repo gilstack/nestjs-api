@@ -103,15 +103,28 @@ src/modules/{feature}/
 
 ## Authentication Pattern
 
-Use guards and decorators for protected routes:
+Authentication is **Global by Default**.
+
+- All routes are protected by default (require valid Access Token)
+- Use `@Public()` decorator to bypass authentication
 
 ```typescript
-@Controller('resource')
-export class ResourceController {
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll(@CurrentUser() user: RequestUser) {
-    return this.service.findAll(user.userId);
+// Public Endpoint
+@Controller('auth')
+export class AuthController {
+  @Post('login')
+  @Public()
+  login() {
+    // ...
+  }
+}
+
+// Protected Endpoint (Default)
+@Controller('users')
+export class UsersController {
+  @Get('me')
+  getProfile(@CurrentUser() user: RequestUser) {
+    // ...
   }
 }
 ```

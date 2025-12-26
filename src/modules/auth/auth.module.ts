@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
@@ -6,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
 
 // relatives
+import { UserModule } from '../user/user.module';
 import { TokenService } from './application/services/token.service';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { RefreshSessionUseCase } from './application/use-cases/refresh-session.use-case';
@@ -18,7 +20,11 @@ import { PrismaSessionRepository } from './infrastructure/repositories/prisma-se
 import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strategy';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' }), JwtModule.register({})],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({}),
+    UserModule,
+  ],
   controllers: [AuthController],
   providers: [
     // Services
@@ -34,6 +40,10 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
     JwtCookieStrategy,
 
     // Guards
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     JwtAuthGuard,
 
     // Repositories

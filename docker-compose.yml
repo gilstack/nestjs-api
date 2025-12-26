@@ -24,7 +24,7 @@ services:
   redis:
     container_name: storagie_redis
     image: bitnami/redis:latest
-    command: redis-server
+    command: redis-server --protected-mode no
     restart: always
     ports:
       - '6379:6379'

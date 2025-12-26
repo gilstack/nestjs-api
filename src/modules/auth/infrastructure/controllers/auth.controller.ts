@@ -7,7 +7,6 @@ import {
   Query,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -25,7 +24,7 @@ import { RefreshSessionUseCase } from '../../application/use-cases/refresh-sessi
 import { RequestMagicLinkUseCase } from '../../application/use-cases/request-magic-link.use-case';
 import { VerifyMagicLinkUseCase } from '../../application/use-cases/verify-magic-link.use-case';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Public } from '../decorators/public.decorator';
 import type { RequestUser } from '../strategies/jwt-cookie.strategy';
 
 @Controller('auth')
@@ -38,6 +37,7 @@ export class AuthController {
   ) { }
 
   @Post('magic-link')
+  @Public()
   @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   async requestMagicLink(@Body() dto: RequestMagicLinkDto): Promise<{ message: string }> {
@@ -45,6 +45,7 @@ export class AuthController {
   }
 
   @Post('magic-link/verify')
+  @Public()
   @AuthRateLimit()
   async verifyMagicLink(
     @Body() dto: VerifyMagicLinkDto,
@@ -56,6 +57,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @Public()
   async refresh(
     @Req() request: FastifyRequest,
     @Res({ passthrough: true }) response: FastifyReply,
@@ -64,7 +66,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @CurrentUser() user: RequestUser,

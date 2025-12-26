@@ -1,10 +1,10 @@
-import type { UserRole, UserStatus } from '@prisma/client';
+import { AuthProvider, UserRole, UserStatus } from '../enums';
 
 export interface Account {
   id: string;
   userId: string;
   identifier: string;
-  provider: 'EMAIL' | 'GOOGLE' | 'GITHUB';
+  provider: AuthProvider;
   providerId: string | null;
   verifiedAt: Date | null;
   createdAt: Date;
@@ -39,7 +39,7 @@ export interface CreateUserInput {
 
 export interface CreateAccountInput {
   identifier: string;
-  provider: 'EMAIL' | 'GOOGLE' | 'GITHUB';
+  provider: AuthProvider;
   providerId?: string;
 }
 

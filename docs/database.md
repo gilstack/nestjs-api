@@ -50,6 +50,7 @@ export class PrismaService extends PrismaClient implements IDatabaseService, OnM
     await this.$disconnect();
   }
 
+
   async healthCheck(): Promise<boolean> {
     try {
       await this.$queryRaw`SELECT 1`;
@@ -58,8 +59,43 @@ export class PrismaService extends PrismaClient implements IDatabaseService, OnM
       return false;
     }
   }
+
+  /**
+   * Access the Prisma client extended with Soft Delete capabilities.
+   * Use this getter when you need to perform soft delete operations.
+   */
+  get withSoftDelete() {
+    return this.extended;
+  }
 }
 ```
+
+## Soft Delete
+
+The Prisma Service includes a custom extension for Soft Delete (`deletedAt` field).
+
+### Usage
+
+```typescript
+// Soft Delete a record
+await this.prisma.withSoftDelete.user.softDelete({
+  where: { id: userId },
+});
+
+// Restore a record
+await this.prisma.withSoftDelete.user.restore({
+  where: { id: userId },
+});
+
+// Find including deleted
+await this.prisma.withSoftDelete.user.findManyWithDeleted({
+  where: { email: '...' },
+});
+```
+
+### Default Behavior
+
+Standard Prisma calls (`this.prisma.user.findMany`, etc.) automatically exclude records where `deletedAt` is not null, thanks to global query filters in the extension.
 
 ## Usage
 

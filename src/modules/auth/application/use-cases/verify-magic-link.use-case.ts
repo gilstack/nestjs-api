@@ -8,6 +8,8 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 
 // user module
 import type { User } from '@modules/user/domain/entities/user.entity';
+import { AuthProvider } from '@modules/user/domain/enums/auth-provider.enum';
+import { UserStatus } from '@modules/user/domain/enums/user-status.enum';
 import type { IUserRepository } from '@modules/user/domain/repositories/user.repository';
 
 // relatives
@@ -77,7 +79,7 @@ export class VerifyMagicLinkUseCase {
 
       user = await this.userRepository.createWithAccount(
         { username, tag },
-        { identifier: normalizedEmail, provider: 'EMAIL' },
+        { identifier: normalizedEmail, provider: AuthProvider.EMAIL },
       );
 
       this.logger.info('New user created via magic link', {
@@ -87,7 +89,7 @@ export class VerifyMagicLinkUseCase {
     }
 
     // Activate user if pending (first login)
-    if (user.status === 'PENDING') {
+    if (user.status === UserStatus.PENDING) {
       user = await this.userRepository.activate(user.id, normalizedEmail);
 
       this.logger.info('User activated via magic link', { userId: user.id });

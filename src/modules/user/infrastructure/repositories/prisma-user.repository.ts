@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import {
+  AccountProvider as PrismaAccountProvider,
+  UserRole as PrismaUserRole,
+  UserStatus as PrismaUserStatus,
+} from '@prisma/client';
 
 // internal
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
@@ -17,78 +22,97 @@ export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) { }
 
   async findById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.withSoftDelete.user.findFirst({
       where: { id },
       include: { accounts: true },
     });
+
+    if (!user) return null;
+    return user as unknown as User;
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const normalizedEmail = email.toLowerCase().trim();
 
-    return this.prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         accounts: {
           some: {
             identifier: normalizedEmail,
-            provider: 'EMAIL',
+            provider: PrismaAccountProvider.EMAIL,
           },
         },
       },
       include: { accounts: true },
     });
+
+    if (!user) return null;
+    return user as unknown as User;
   }
 
   async createWithAccount(
     userData: CreateUserInput,
     accountData: CreateAccountInput,
   ): Promise<User> {
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         username: userData.username,
         tag: userData.tag,
-        role: userData.role ?? 'GUEST',
-        status: userData.status ?? 'PENDING',
+        role: (userData.role as unknown as PrismaUserRole) ?? PrismaUserRole.GUEST,
+        status: (userData.status as unknown as PrismaUserStatus) ?? PrismaUserStatus.PENDING,
         name: userData.name,
         image: userData.image,
         bio: userData.bio,
         accounts: {
           create: {
             identifier: accountData.identifier.toLowerCase().trim(),
-            provider: accountData.provider,
+            provider: accountData.provider as unknown as PrismaAccountProvider,
             providerId: accountData.providerId,
           },
         },
       },
       include: { accounts: true },
     });
+
+    return user as unknown as User;
   }
 
   async update(id: string, data: UpdateUserInput): Promise<User> {
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        role: data.role ? (data.role as unknown as PrismaUserRole) : undefined,
+        status: data.status ? (data.status as unknown as PrismaUserStatus) : undefined,
+      },
       include: { accounts: true },
     });
+
+    return user as unknown as User;
   }
 
   async activate(id: string, email: string): Promise<User> {
     const normalizedEmail = email.toLowerCase().trim();
 
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: {
-        status: 'ACTIVE',
-        role: 'USER',
+        status: PrismaUserStatus.ACTIVE,
+        role: PrismaUserRole.USER,
         verifiedAt: new Date(),
         accounts: {
           updateMany: {
-            where: { identifier: normalizedEmail, provider: 'EMAIL' },
+            where: {
+              identifier: normalizedEmail,
+              provider: PrismaAccountProvider.EMAIL,
+            },
             data: { verifiedAt: new Date() },
           },
         },
       },
       include: { accounts: true },
     });
+
+    return user as unknown as User;
   }
 }
