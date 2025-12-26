@@ -20,11 +20,11 @@ The Storagie API uses **Magic Link authentication** - a passwordless authenticat
 
 ## Components
 
-| Component | Interface | Implementation | Token |
-|-----------|-----------|----------------|-------|
-| Email | `IEmailService` | `NodemailerEmailService` | `EMAIL_SERVICE` |
+| Component             | Interface                   | Implementation                   | Token                                |
+| --------------------- | --------------------------- | -------------------------------- | ------------------------------------ |
+| Email                 | `IEmailService`             | `NodemailerEmailService`         | `EMAIL_SERVICE`                      |
 | Magic Link Repository | `IMagicLinkTokenRepository` | `PrismaMagicLinkTokenRepository` | `REPOSITORY_TOKENS.MAGIC_LINK_TOKEN` |
-| Session Repository | `ISessionRepository` | `PrismaSessionRepository` | `REPOSITORY_TOKENS.SESSION` |
+| Session Repository    | `ISessionRepository`        | `PrismaSessionRepository`        | `REPOSITORY_TOKENS.SESSION`          |
 
 ## Authentication Flow
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 {"token": "64-character-hex-token"}
 ```
 
-1. Validate token against stored bcrypt hash
+1. Validate token against stored bcrypt hash (checks valid and **recently used** tokens to handle race conditions)
 2. Create/activate user if needed (status: PENDING → ACTIVE, role: GUEST → USER)
 3. Delete existing session (single session policy)
 4. Create new session with bcrypt-hashed refresh token
@@ -59,49 +59,49 @@ Content-Type: application/json
 
 ### Token Configuration
 
-| Token | Payload | TTL | Cookie Path |
-|-------|---------|-----|-------------|
-| Access | `sub`, `email`, `role` | 10 min (default) | `/` |
-| Refresh | `sub`, `sid` | 7 days (default) | `/api/auth/refresh` |
-| Magic Link | Random hex | 30 min | N/A |
+| Token      | Payload                | TTL              | Cookie Path         |
+| ---------- | ---------------------- | ---------------- | ------------------- |
+| Access     | `sub`, `email`, `role` | 10 min (default) | `/`                 |
+| Refresh    | `sub`, `sid`           | 7 days (default) | `/api/auth/refresh` |
+| Magic Link | Random hex             | 30 min           | N/A                 |
 
 ### Cookies
 
 Both tokens are delivered as HttpOnly, Secure, SameSite=Strict cookies:
 
 ```typescript
-response.cookie('access', accessToken, {
-    httpOnly: true,
-    secure: process.env.COOKIE_SECURE === 'true',
-    sameSite: 'strict',
-    path: '/',
-    maxAge: 600000, // 10 min
+response.cookie("access", accessToken, {
+  httpOnly: true,
+  secure: process.env.COOKIE_SECURE === "true",
+  sameSite: "strict",
+  path: "/",
+  maxAge: 600000, // 10 min
 });
 ```
 
 ## API Endpoints
 
-| Method | Route | Auth | Description |
-|--------|-------|------|-------------|
-| POST | `/api/auth/magic-link` | ❌ | Request magic link |
-| POST | `/api/auth/magic-link/verify` | ❌ | Verify and login |
-| POST | `/api/auth/refresh` | ❌ | Refresh access token |
-| POST | `/api/auth/logout` | ✅ | Logout (clear session) |
-| POST | `/api/auth/me` | ✅ | Get current user |
+| Method | Route                         | Auth | Description            |
+| ------ | ----------------------------- | ---- | ---------------------- |
+| POST   | `/api/auth/magic-link`        | ❌   | Request magic link     |
+| POST   | `/api/auth/magic-link/verify` | ❌   | Verify and login       |
+| POST   | `/api/auth/refresh`           | ❌   | Refresh access token   |
+| POST   | `/api/auth/logout`            | ✅   | Logout (clear session) |
+| POST   | `/api/auth/me`                | ✅   | Get current user       |
 
 ## Error Codes
 
 The auth module uses custom exceptions with the following codes:
 
-| Code | Status | Description |
-|------|--------|-------------|
-| `AUTH_INVALID_TOKEN` | 401 | Token inválido ou expirado |
-| `AUTH_TOKEN_EXPIRED` | 401 | Token expirado |
-| `AUTH_REFRESH_TOKEN_MISSING` | 401 | Refresh token não encontrado |
-| `AUTH_REFRESH_TOKEN_INVALID` | 401 | Refresh token inválido |
-| `AUTH_SESSION_EXPIRED` | 401 | Sessão expirada |
-| `AUTH_USER_INACTIVE` | 403 | Usuário inativo |
-| `AUTH_USER_BLOCKED` | 403 | Usuário bloqueado |
+| Code                         | Status | Description                  |
+| ---------------------------- | ------ | ---------------------------- |
+| `AUTH_INVALID_TOKEN`         | 401    | Token inválido ou expirado   |
+| `AUTH_TOKEN_EXPIRED`         | 401    | Token expirado               |
+| `AUTH_REFRESH_TOKEN_MISSING` | 401    | Refresh token não encontrado |
+| `AUTH_REFRESH_TOKEN_INVALID` | 401    | Refresh token inválido       |
+| `AUTH_SESSION_EXPIRED`       | 401    | Sessão expirada              |
+| `AUTH_USER_INACTIVE`         | 403    | Usuário inativo              |
+| `AUTH_USER_BLOCKED`          | 403    | Usuário bloqueado            |
 
 ## Usage
 
@@ -114,16 +114,16 @@ Authentication is enabled globally using `APP_GUARD`. By default, **all endpoint
 To make an endpoint public (skip authentication), use the `@Public()` decorator:
 
 ```typescript
-import { Controller, Post } from '@nestjs/common';
-import { Public } from '@modules/auth/infrastructure/decorators/public.decorator';
+import { Controller, Post } from "@nestjs/common";
+import { Public } from "@modules/auth/infrastructure/decorators/public.decorator";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
-    @Post('login')
-    @Public()
-    login() {
-        return { message: 'Public Route' };
-    }
+  @Post("login")
+  @Public()
+  login() {
+    return { message: "Public Route" };
+  }
 }
 ```
 
@@ -132,13 +132,13 @@ export class AuthController {
 Since the guard validates the token globally, the user object is available in the request. Use the `@CurrentUser` decorator:
 
 ```typescript
-@Controller('protected')
+@Controller("protected")
 export class ProtectedController {
-    @Get()
-    // No @UseGuards needed - it's global!
-    getProtected(@CurrentUser() user: RequestUser) {
-        return { message: `Hello ${user.email}`, userId: user.userId };
-    }
+  @Get()
+  // No @UseGuards needed - it's global!
+  getProtected(@CurrentUser() user: RequestUser) {
+    return { message: `Hello ${user.email}`, userId: user.userId };
+  }
 }
 ```
 

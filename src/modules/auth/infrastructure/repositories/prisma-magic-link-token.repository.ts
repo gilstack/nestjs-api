@@ -36,17 +36,30 @@ export class PrismaMagicLinkTokenRepository implements IMagicLinkTokenRepository
       orderBy: { createdAt: 'desc' },
     });
 
-    return records.map(
-      (record) =>
-        new MagicLinkToken({
-          id: record.id,
-          email: record.email,
-          tokenHash: record.tokenHash,
-          expiresAt: record.expiresAt,
-          usedAt: record.usedAt,
-          createdAt: record.createdAt,
-        }),
-    );
+    return records.map((record) => this.mapToEntity(record));
+  }
+
+  async findRecentlyUsedByEmail(email: string, since: Date): Promise<MagicLinkToken[]> {
+    const records = await this.prisma.magicLinkToken.findMany({
+      where: {
+        email,
+        usedAt: { gte: since },
+      },
+      orderBy: { usedAt: 'desc' },
+    });
+
+    return records.map((record) => this.mapToEntity(record));
+  }
+
+  private mapToEntity(record: any): MagicLinkToken {
+    return new MagicLinkToken({
+      id: record.id,
+      email: record.email,
+      tokenHash: record.tokenHash,
+      expiresAt: record.expiresAt,
+      usedAt: record.usedAt,
+      createdAt: record.createdAt,
+    });
   }
 
   async markAsUsed(id: string): Promise<void> {

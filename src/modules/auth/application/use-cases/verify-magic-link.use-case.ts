@@ -44,17 +44,35 @@ export class VerifyMagicLinkUseCase {
     // Find valid tokens for this email
     const validTokens = await this.magicLinkTokenRepository.findValidByEmail(normalizedEmail);
 
-    if (validTokens.length === 0) {
-      throw AuthException.invalidToken();
-    }
-
-    // Find matching token by comparing hashes
     let matchedToken: MagicLinkToken | null = null;
+    let isUsedToken = false;
+
+    // Check valid tokens first
     for (const t of validTokens) {
-      const isValid = await this.tokenService.compareToken(token, t.tokenHash);
-      if (isValid) {
+      if (await this.tokenService.compareToken(token, t.tokenHash)) {
         matchedToken = t;
         break;
+      }
+    }
+
+    // If no valid token matched, check for recently used tokens
+    if (!matchedToken) {
+      const recentThreshold = new Date(Date.now() - 60000); // 1 minute ago
+      const recentTokens = await this.magicLinkTokenRepository.findRecentlyUsedByEmail(
+        normalizedEmail,
+        recentThreshold,
+      );
+
+      for (const t of recentTokens) {
+        if (await this.tokenService.compareToken(token, t.tokenHash)) {
+          matchedToken = t;
+          isUsedToken = true;
+          this.logger.warn('Recovered recently used token for verification', {
+            email: normalizedEmail,
+            tokenId: t.id,
+          });
+          break;
+        }
       }
     }
 
@@ -62,8 +80,14 @@ export class VerifyMagicLinkUseCase {
       throw AuthException.invalidToken();
     }
 
-    // Mark token as used
-    await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
+    // Mark token as used if not already - race condition check
+    if (!isUsedToken) {
+      try {
+        await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
+      } catch (error) {
+        this.logger.warn('Failed to mark token as used', { tokenId: matchedToken.id, error });
+      }
+    }
 
     // Find or create user
     let user: User | null = await this.userRepository.findByEmail(normalizedEmail);

@@ -29,9 +29,27 @@ export class RequestMagicLinkUseCase {
     private readonly config: TypedConfigService,
   ) {}
 
-  async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
+  async execute(dto: RequestMagicLinkDto): Promise<{ message: string; remainingSeconds?: number }> {
     const { email } = dto;
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Check for existing valid tokens associated with the email
+    const validTokens = await this.magicLinkTokenRepository.findValidByEmail(normalizedEmail);
+
+    if (validTokens.length > 0) {
+      const activeToken = validTokens[0];
+      const now = Date.now();
+      const expiresAt = activeToken.expiresAt.getTime();
+      const diff = expiresAt - now;
+
+      if (diff > 0) {
+        const remainingSeconds = Math.ceil(diff / 1000);
+        return {
+          message: `A valid access link already exists.`,
+          remainingSeconds,
+        };
+      }
+    }
 
     // Try to find existing user to get their name
     const existingUser = await this.userRepository.findByEmail(normalizedEmail);
@@ -62,6 +80,6 @@ export class RequestMagicLinkUseCase {
     this.logger.info('Magic link requested', { email: normalizedEmail });
     this.logger.audit('MAGIC_LINK_REQUEST', 'system', 'MagicLinkToken', { email: normalizedEmail });
 
-    return { message: 'Se o email estiver cadastrado, você receberá um link de acesso.' };
+    return { message: 'Magic link sent successfully.' };
   }
 }

@@ -24,14 +24,25 @@ export interface JobOptions {
   priority?: number;
   delay?: number;
   attempts?: number;
-  backoff?: { type: 'exponential' | 'fixed'; delay: number };
+  backoff?: { type: "exponential" | "fixed"; delay: number };
   removeOnComplete?: boolean | number;
   removeOnFail?: boolean | number;
 }
 
 export interface IQueueService {
-  add<T>(queueName: string, jobName: string, data: T, options?: JobOptions): Promise<string>;
-  addUnique<T>(queueName: string, jobName: string, data: T, uniqueKey: string, ttl?: number): Promise<string | null>;
+  add<T>(
+    queueName: string,
+    jobName: string,
+    data: T,
+    options?: JobOptions
+  ): Promise<string>;
+  addUnique<T>(
+    queueName: string,
+    jobName: string,
+    data: T,
+    uniqueKey: string,
+    ttl?: number
+  ): Promise<string | null>;
   remove(queueName: string, jobId: string): Promise<void>;
   clean(queueName: string): Promise<void>;
   pause(queueName: string): Promise<void>;
@@ -52,29 +63,27 @@ The implementation manages multiple queues dynamically:
 ### Adding Jobs
 
 ```typescript
-import { Inject, Injectable } from '@nestjs/common';
-import { QUEUE_SERVICE } from '@shared/constants/injection-tokens';
-import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queue.interface';
+import { Inject, Injectable } from "@nestjs/common";
+import { QUEUE_SERVICE } from "@shared/constants/injection-tokens";
+import type { IQueueService } from "@shared/infrastructure/queue/interfaces/queue.interface";
 
 @Injectable()
 export class EmailService {
-  constructor(
-    @Inject(QUEUE_SERVICE) private readonly queue: IQueueService,
-  ) {}
+  constructor(@Inject(QUEUE_SERVICE) private readonly queue: IQueueService) {}
 
   async sendWelcomeEmail(userId: string, email: string): Promise<void> {
-    await this.queue.add('email', 'welcome', {
+    await this.queue.add("email", "welcome", {
       userId,
       email,
-      template: 'welcome',
+      template: "welcome",
     });
   }
 
   async sendWithOptions(data: EmailData): Promise<void> {
-    await this.queue.add('email', 'send', data, {
+    await this.queue.add("email", "send", data, {
       priority: 1,
       attempts: 5,
-      backoff: { type: 'exponential', delay: 1000 },
+      backoff: { type: "exponential", delay: 1000 },
     });
   }
 }
@@ -107,17 +116,17 @@ Workers process jobs from queues. Create them in the appropriate module:
 
 ```typescript
 // src/modules/email/infrastructure/processors/email.processor.ts
-import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Job } from 'bullmq';
+import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { Job } from "bullmq";
 
-@Processor('email')
+@Processor("email")
 export class EmailProcessor extends WorkerHost {
   async process(job: Job<EmailJobData>): Promise<void> {
     switch (job.name) {
-      case 'welcome':
+      case "welcome":
         await this.sendWelcome(job.data);
         break;
-      case 'password-reset':
+      case "password-reset":
         await this.sendPasswordReset(job.data);
         break;
     }
@@ -137,9 +146,7 @@ Register the processor in the module:
 
 ```typescript
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: 'email' }),
-  ],
+  imports: [BullModule.registerQueue({ name: "email" })],
   providers: [EmailProcessor],
 })
 export class EmailModule {}
@@ -152,6 +159,7 @@ export class EmailModule {}
 ```
 
 Job naming:
+
 ```
 {action}           -> send, process, generate
 {entity}.{action}  -> user.created, order.completed
@@ -159,4 +167,5 @@ Job naming:
 
 ## Monitoring
 
-BullMQ Board is available at `http://localhost:3001` when running with docker-compose.
+- **Development**: Bull Board is available at `http://localhost:3000/admin/queues` (or configured port)
+- **Docker**: BullMQ Board is also available at `http://localhost:3001` when running with docker-compose.
