@@ -7,6 +7,7 @@ import {
   QUEUE_SERVICE,
   REPOSITORY_TOKENS,
 } from '@shared/constants/injection-tokens';
+import { JOB_NAMES, QUEUE_NAMES } from '@shared/constants/queue.constants';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queue.interface';
 
@@ -45,7 +46,7 @@ export class RequestMagicLinkUseCase {
     const magicLinkUrl = `${this.config.auth.magicLinkUrl}?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
 
     // Queue email for async sending
-    await this.queueService.add('email', 'magic-link', {
+    await this.queueService.add(QUEUE_NAMES.EMAIL, JOB_NAMES.MAGIC_LINK, {
       email: normalizedEmail,
       magicLinkUrl,
       expiresInMinutes: Math.floor(expiresInSeconds / 60),

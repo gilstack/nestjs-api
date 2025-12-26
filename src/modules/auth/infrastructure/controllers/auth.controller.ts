@@ -11,8 +11,11 @@ import {
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+// internal
+import { AuthRateLimit } from '@shared/infrastructure/throttler/decorators/rate-limit.decorator';
+
 // relatives
-import type {
+import {
   AuthResponseDto,
   RequestMagicLinkDto,
   VerifyMagicLinkDto,
@@ -35,12 +38,14 @@ export class AuthController {
   ) { }
 
   @Post('magic-link')
+  @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   async requestMagicLink(@Body() dto: RequestMagicLinkDto): Promise<{ message: string }> {
     return this.requestMagicLinkUseCase.execute(dto);
   }
 
   @Post('magic-link/verify')
+  @AuthRateLimit()
   async verifyMagicLink(
     @Body() dto: VerifyMagicLinkDto,
     @Query('email') email: string,
@@ -66,11 +71,5 @@ export class AuthController {
     @Res({ passthrough: true }) response: FastifyReply,
   ): Promise<void> {
     await this.logoutUseCase.execute(user.userId, response);
-  }
-
-  @Post('me')
-  @UseGuards(JwtAuthGuard)
-  async me(@CurrentUser() user: RequestUser): Promise<RequestUser> {
-    return user;
   }
 }

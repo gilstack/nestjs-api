@@ -1,14 +1,33 @@
 import { TypedConfigService } from '@config/config.service';
 import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+
+// relatives
 import type { IDatabaseService } from '../interfaces/database.interface';
+import { softDeleteExtension } from './extensions/soft-delete.extension';
+
+const basePrisma = new PrismaClient();
+const extendedPrisma = basePrisma.$extends(softDeleteExtension);
+
+export type ExtendedPrismaClient = typeof extendedPrisma;
 
 @Injectable()
 export class PrismaService extends PrismaClient implements IDatabaseService, OnModuleInit, OnModuleDestroy {
+  private readonly extended: ExtendedPrismaClient;
+
   constructor(config: TypedConfigService) {
     super({
       log: config.database.logging ? ['query', 'error', 'warn'] : ['error'],
     });
+
+    this.extended = this.$extends(softDeleteExtension);
+  }
+
+  /**
+   * Get the extended Prisma client with soft delete support
+   */
+  get withSoftDelete(): ExtendedPrismaClient {
+    return this.extended;
   }
 
   async onModuleInit() {
@@ -36,4 +55,3 @@ export class PrismaService extends PrismaClient implements IDatabaseService, OnM
     }
   }
 }
-

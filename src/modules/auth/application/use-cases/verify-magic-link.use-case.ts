@@ -3,9 +3,12 @@ import { Inject, Injectable } from '@nestjs/common';
 // internal
 import { TypedConfigService } from '@config/config.service';
 import { LOGGER_SERVICE, REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
-import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+
+// user module
+import type { User } from '@modules/user/domain/entities/user.entity';
+import type { IUserRepository } from '@modules/user/domain/repositories/user.repository';
 
 // relatives
 import type { MagicLinkToken } from '../../domain/entities/magic-link-token.entity';
@@ -22,9 +25,10 @@ export class VerifyMagicLinkUseCase {
     private readonly magicLinkTokenRepository: IMagicLinkTokenRepository,
     @Inject(REPOSITORY_TOKENS.SESSION)
     private readonly sessionRepository: ISessionRepository,
+    @Inject(REPOSITORY_TOKENS.USER)
+    private readonly userRepository: IUserRepository,
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
     private readonly tokenService: TokenService,
-    private readonly prisma: PrismaService,
     private readonly config: TypedConfigService,
   ) { }
 
@@ -62,17 +66,7 @@ export class VerifyMagicLinkUseCase {
     await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
 
     // Find or create user
-    let user = await this.prisma.user.findFirst({
-      where: {
-        accounts: {
-          some: {
-            identifier: normalizedEmail,
-            provider: 'EMAIL',
-          },
-        },
-      },
-      include: { accounts: true },
-    });
+    let user: User | null = await this.userRepository.findByEmail(normalizedEmail);
 
     const isNewUser = !user;
 
@@ -81,21 +75,10 @@ export class VerifyMagicLinkUseCase {
       const username = normalizedEmail.split('@')[0];
       const tag = Math.random().toString(36).substring(2, 6).toUpperCase();
 
-      user = await this.prisma.user.create({
-        data: {
-          username,
-          tag,
-          role: 'GUEST',
-          status: 'PENDING',
-          accounts: {
-            create: {
-              identifier: normalizedEmail,
-              provider: 'EMAIL',
-            },
-          },
-        },
-        include: { accounts: true },
-      });
+      user = await this.userRepository.createWithAccount(
+        { username, tag },
+        { identifier: normalizedEmail, provider: 'EMAIL' },
+      );
 
       this.logger.info('New user created via magic link', {
         userId: user.id,
@@ -105,21 +88,7 @@ export class VerifyMagicLinkUseCase {
 
     // Activate user if pending (first login)
     if (user.status === 'PENDING') {
-      user = await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          status: 'ACTIVE',
-          role: 'USER',
-          verifiedAt: new Date(),
-          accounts: {
-            updateMany: {
-              where: { identifier: normalizedEmail, provider: 'EMAIL' },
-              data: { verifiedAt: new Date() },
-            },
-          },
-        },
-        include: { accounts: true },
-      });
+      user = await this.userRepository.activate(user.id, normalizedEmail);
 
       this.logger.info('User activated via magic link', { userId: user.id });
     }
