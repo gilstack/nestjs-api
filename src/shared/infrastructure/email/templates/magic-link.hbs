@@ -1,20 +1,90 @@
-<h2>Acesse sua conta</h2>
+<h1 style="
+  color: rgb(0, 0, 0);
+  font-size: 24px;
+  font-weight: 400;
+  text-align: center;
+  padding: 0px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  margin-left: 0px;
+  margin-right: 0px;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 300;
+">
+  Get
+  <strong style='font-weight: 600;'>Started</strong>
+  Now
+</h1>
 
-<p>Clique no botão abaixo para acessar sua conta:</p>
-
-<p style="text-align: center;">
-    <a href="{{magicLinkUrl}}" class="btn">Acessar conta</a>
+<p style="
+  color: rgb(0, 0, 0);
+  font-size: 14px;
+  line-height: 24px;
+  margin: 30px 0;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+">
+  Hello,
+  {{name}}<br />
 </p>
 
-<p class="text-muted">
-    Este link expira em <strong>{{expiresInMinutes}} minutos</strong>.
+<p style="
+  color: rgb(0, 0, 0);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  ">
+  ✨ Your passport to Storagie is one click away.
 </p>
 
-<p class="text-muted">
-    Se você não solicitou este acesso, ignore este email.
+<div style='text-align: center; margin: 25px 0;'>
+  <a href='{{magicLinkUrl}}' style="
+    background-color: rgb(0, 0, 0);
+    border-radius: 0.25rem;
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.75rem 1.25rem;
+    line-height: 100%;
+    text-decoration: none;
+    display: inline-block;
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  ">
+    Join Storagie
+  </a>
+</div>
+
+<p style="
+  color: rgb(102, 102, 102);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  margin: 16px 0;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+">
+  If the button does not work, copy and paste this link into your browser:
 </p>
 
-<p class="text-muted" style="margin-top: 24px; font-size: 12px;">
-    Caso o botão não funcione, copie e cole o link abaixo no seu navegador:<br>
-    <a href="{{magicLinkUrl}}" style="color: #4F46E5; word-break: break-all;">{{magicLinkUrl}}</a>
+<div style="
+  word-break: break-all;
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+">
+  {{magicLinkUrl}}
+</div>
+
+<p style="
+  color: rgb(102, 102, 102);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  margin: 20px 0 0 0;
+  text-align: center;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+">
+  This link expires in <strong>{{expiresInMinutes}} minutes</strong>.
 </p>

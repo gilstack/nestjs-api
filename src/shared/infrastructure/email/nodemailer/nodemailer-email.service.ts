@@ -98,20 +98,26 @@ export class NodemailerEmailService implements IEmailService, OnModuleInit {
 
   async sendMagicLink(
     email: string,
+    userName: string | null,
     magicLinkUrl: string,
     expiresInMinutes: number,
   ): Promise<void> {
+    const displayName = userName || email.split('@')[0];
+
     const html = this.renderTemplate('magic-link', {
-      title: 'Acesse sua conta',
+      title: 'Join Storagie',
+      previewText: 'Join Storagie',
+      logotype: this.config.email.logotype,
+      name: displayName,
       magicLinkUrl,
       expiresInMinutes,
     });
 
     await this.send({
       to: email,
-      subject: 'Seu link de acesso - Storagie',
+      subject: 'Your Access Link - Storagie',
       html,
-      text: `Acesse sua conta: ${magicLinkUrl}\n\nEste link expira em ${expiresInMinutes} minutos.`,
+      text: `Hello ${displayName},\n\nYour passport to Storagie is one click away: ${magicLinkUrl}\n\nThis link expires in ${expiresInMinutes} minutes.`,
     });
   }
 }

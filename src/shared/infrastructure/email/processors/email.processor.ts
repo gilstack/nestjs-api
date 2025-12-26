@@ -7,6 +7,7 @@ import type { IEmailService } from '../interfaces/email.interface';
 
 export interface MagicLinkEmailJobData {
   email: string;
+  userName: string | null;
   magicLinkUrl: string;
   expiresInMinutes: number;
 }
@@ -42,7 +43,12 @@ export class EmailProcessor extends WorkerHost {
   }
 
   private async processMagicLink(data: MagicLinkEmailJobData): Promise<void> {
-    await this.emailService.sendMagicLink(data.email, data.magicLinkUrl, data.expiresInMinutes);
+    await this.emailService.sendMagicLink(
+      data.email,
+      data.userName,
+      data.magicLinkUrl,
+      data.expiresInMinutes,
+    );
     this.logger.info('Magic link email sent', { email: data.email });
   }
 }

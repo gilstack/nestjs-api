@@ -1,6 +1,7 @@
 // internal
 import { TypedConfigService } from '@config/config.service';
 import { Inject, Injectable } from '@nestjs/common';
+import type { IUserRepository } from '@modules/user/domain/repositories/user.repository';
 import {
   LOGGER_SERVICE,
   QUEUE_SERVICE,
@@ -20,6 +21,8 @@ export class RequestMagicLinkUseCase {
   constructor(
     @Inject(REPOSITORY_TOKENS.MAGIC_LINK_TOKEN)
     private readonly magicLinkTokenRepository: IMagicLinkTokenRepository,
+    @Inject(REPOSITORY_TOKENS.USER)
+    private readonly userRepository: IUserRepository,
     @Inject(QUEUE_SERVICE) private readonly queueService: IQueueService,
     @Inject(LOGGER_SERVICE) private readonly logger: ILogger,
     private readonly tokenService: TokenService,
@@ -29,6 +32,10 @@ export class RequestMagicLinkUseCase {
   async execute(dto: RequestMagicLinkDto): Promise<{ message: string }> {
     const { email } = dto;
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Try to find existing user to get their name
+    const existingUser = await this.userRepository.findByEmail(normalizedEmail);
+    const userName = existingUser?.name || null;
 
     // Generate random token and hash
     const token = this.tokenService.generateRandomToken();
@@ -47,6 +54,7 @@ export class RequestMagicLinkUseCase {
     // Queue email for async sending
     await this.queueService.add(QUEUE_NAMES.EMAIL, JOB_NAMES.MAGIC_LINK, {
       email: normalizedEmail,
+      userName,
       magicLinkUrl,
       expiresInMinutes: Math.floor(expiresInSeconds / 60),
     });

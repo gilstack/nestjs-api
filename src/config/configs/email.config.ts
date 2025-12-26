@@ -6,6 +6,7 @@ export interface EmailConfig {
   user: string;
   pass: string;
   from: string;
+  logotype: string;
 }
 
 export default registerAs(
@@ -16,5 +17,6 @@ export default registerAs(
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
     from: process.env.SMTP_FROM || 'noreply@storagie.app',
+    logotype: process.env.EMAIL_LOGOTYPE_URL || 'https://storagie.app/logo.png',
   }),
 );

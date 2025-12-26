@@ -7,5 +7,10 @@ export interface EmailOptions {
 
 export interface IEmailService {
   send(options: EmailOptions): Promise<void>;
-  sendMagicLink(email: string, magicLinkUrl: string, expiresInMinutes: number): Promise<void>;
+  sendMagicLink(
+    email: string,
+    userName: string | null,
+    magicLinkUrl: string,
+    expiresInMinutes: number,
+  ): Promise<void>;
 }
