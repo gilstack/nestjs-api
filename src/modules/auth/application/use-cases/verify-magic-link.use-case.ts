@@ -55,32 +55,11 @@ export class VerifyMagicLinkUseCase {
       }
     }
 
-    // If no valid token matched, check for recently used tokens
-    if (!matchedToken) {
-      const recentThreshold = new Date(Date.now() - 60000); // 1 minute ago
-      const recentTokens = await this.magicLinkTokenRepository.findRecentlyUsedByEmail(
-        normalizedEmail,
-        recentThreshold,
-      );
-
-      for (const t of recentTokens) {
-        if (await this.tokenService.compareToken(token, t.tokenHash)) {
-          matchedToken = t;
-          isUsedToken = true;
-          this.logger.warn('Recovered recently used token for verification', {
-            email: normalizedEmail,
-            tokenId: t.id,
-          });
-          break;
-        }
-      }
-    }
-
     if (!matchedToken) {
       throw AuthException.invalidToken();
     }
 
-    // Mark token as used if not already - race condition check
+    // Mark token as used if not already
     if (!isUsedToken) {
       try {
         await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
