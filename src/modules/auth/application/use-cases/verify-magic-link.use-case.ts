@@ -153,7 +153,7 @@ export class VerifyMagicLinkUseCase {
     response.cookie('access', accessToken, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: this.tokenService.getAccessTokenExpiresInMs(),
     });
@@ -161,7 +161,7 @@ export class VerifyMagicLinkUseCase {
     response.cookie('refresh', refreshTokenJwt, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/api/auth/refresh',
       maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
     });

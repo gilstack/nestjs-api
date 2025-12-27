@@ -95,6 +95,26 @@ export class UserController {
     if (!foundUser) {
       throw new NotFoundException('User not found or inactive');
     }
-    return foundUser;
+
+    // TODO: Map entity to DTO (simple inline mapper for now)
+    // In a larger app, use a dedicated mapper service
+    const emailAccount = foundUser.accounts?.find((acc) => acc.provider === 'EMAIL');
+    const firstAccount = foundUser.accounts?.[0];
+    const email = emailAccount?.identifier || firstAccount?.identifier || '';
+
+    return {
+      id: foundUser.id,
+      email,
+      username: foundUser.username,
+      tag: foundUser.tag,
+      name: foundUser.name,
+      image: foundUser.image,
+      bio: foundUser.bio,
+      role: foundUser.role,
+      status: foundUser.status,
+      verifiedAt: foundUser.verifiedAt,
+      createdAt: foundUser.createdAt,
+      updatedAt: foundUser.updatedAt,
+    };
   }
 }

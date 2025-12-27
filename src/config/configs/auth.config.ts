@@ -21,6 +21,6 @@ export default registerAs(
     magicLinkUrl: process.env.MAGIC_LINK_URL!,
     magicLinkExpiresIn: parseInt(process.env.MAGIC_LINK_EXPIRES_IN || '1800', 10),
     cookieDomain: process.env.COOKIE_DOMAIN || 'localhost',
-    cookieSecure: process.env.COOKIE_SECURE === 'true',
+    cookieSecure: process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production',
   }),
 );
