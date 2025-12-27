@@ -15,5 +15,6 @@ export interface ISessionRepository {
   update(id: string, data: Partial<CreateSessionData>): Promise<Session>;
   delete(id: string): Promise<void>;
   deleteByUserId(userId: string): Promise<void>;
+  expireByUserId(userId: string): Promise<void>;
   deleteExpired(): Promise<number>;
 }

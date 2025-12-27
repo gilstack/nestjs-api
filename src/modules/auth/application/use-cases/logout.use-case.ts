@@ -17,7 +17,7 @@ export class LogoutUseCase {
   ) {}
 
   async execute(userId: string, response: FastifyReply): Promise<void> {
-    await this.sessionRepository.deleteByUserId(userId);
+    await this.sessionRepository.expireByUserId(userId);
 
     response.clearCookie('access', { path: '/' });
     response.clearCookie('refresh', { path: '/api/auth/refresh' });

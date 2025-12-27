@@ -97,6 +97,13 @@ export class PrismaSessionRepository implements ISessionRepository {
     });
   }
 
+  async expireByUserId(userId: string): Promise<void> {
+    await this.prisma.session.updateMany({
+      where: { userId },
+      data: { expiresAt: new Date() },
+    });
+  }
+
   async deleteExpired(): Promise<number> {
     const result = await this.prisma.session.deleteMany({
       where: { expiresAt: { lt: new Date() } },

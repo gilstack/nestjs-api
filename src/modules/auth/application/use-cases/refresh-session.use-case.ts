@@ -66,17 +66,41 @@ export class RefreshSessionUseCase {
       type: 'access',
     });
 
+    // Rotate Request Token
+    const newRefreshToken = this.tokenService.generateRandomToken();
+    const newRefreshTokenHash = await this.tokenService.hashToken(newRefreshToken);
+    const newRefreshExpiresAt = new Date(Date.now() + this.tokenService.getRefreshTokenExpiresInMs());
+
+    await this.sessionRepository.update(session.id, {
+      refreshTokenHash: newRefreshTokenHash,
+      expiresAt: newRefreshExpiresAt,
+    });
+
+    const newRefreshTokenJwt = this.tokenService.generateRefreshToken({
+        sub: user.id,
+        sid: session.id,
+        type: 'refresh',
+    });
+
     const isSecure = this.config.auth.cookieSecure;
 
     response.cookie('access', accessToken, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: this.tokenService.getAccessTokenExpiresInMs(),
     });
 
-    this.logger.info('Session refreshed', { userId: user.id });
+    response.cookie('refresh', newRefreshTokenJwt, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+        path: '/api/auth/refresh',
+        maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
+    });
+
+    this.logger.info('Session refreshed and rotated', { userId: user.id });
 
     return {
       user: {
