@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 import { Announcement } from '../../domain/entities/announcement.entity';
-import { AnnouncementTarget } from '../../domain/enums/announcement.enums';
+import { AnnouncementStatus, AnnouncementTarget } from '../../domain/enums/announcement.enums';
 import { AnnouncementFilter, IAnnouncementRepository } from '../../domain/repositories/announcement.repository';
 import { AnnouncementMapper } from '../mappers/announcement.mapper';
 
@@ -29,6 +29,14 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
         expiredAt: data.expiredAt,
         deletedAt: data.deletedAt,
       },
+    });
+    return AnnouncementMapper.toDomain(raw);
+  }
+
+  async updateStatus(id: string, status: AnnouncementStatus): Promise<Announcement> {
+    const raw = await this.prisma.db.announcement.update({
+      where: { id },
+      data: { status },
     });
     return AnnouncementMapper.toDomain(raw);
   }
@@ -93,5 +101,29 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
       data: raws.map(AnnouncementMapper.toDomain),
       total,
     };
+  }
+
+  async findReadyToActivate(): Promise<Announcement[]> {
+    const now = new Date();
+    const raws = await this.prisma.db.announcement.findMany({
+      where: {
+        status: 'SCHEDULED',
+        startedAt: { lte: now },
+        deletedAt: null,
+      },
+    });
+    return raws.map(AnnouncementMapper.toDomain);
+  }
+
+  async findReadyToExpire(): Promise<Announcement[]> {
+    const now = new Date();
+    const raws = await this.prisma.db.announcement.findMany({
+      where: {
+        status: 'ACTIVE',
+        expiredAt: { lte: now },
+        deletedAt: null,
+      },
+    });
+    return raws.map(AnnouncementMapper.toDomain);
   }
 }

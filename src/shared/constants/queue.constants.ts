@@ -1,11 +1,14 @@
-// Queue Constants
+// Queues
 export const QUEUE_NAMES = {
   EMAIL: 'email',
+  ANNOUNCEMENT: 'announcement',
 } as const;
 
-// Job Constants
+// Jobs
 export const JOB_NAMES = {
-  MAGIC_LINK: 'magic-link',
+  MAGIC_LINK: 'magic-link', // Email
+  ACTIVATE: 'activate', // Announcement
+  EXPIRE: 'expire', // Announcement
 } as const;
 
 export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];

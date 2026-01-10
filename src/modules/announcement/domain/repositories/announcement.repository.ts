@@ -1,5 +1,5 @@
 import { Announcement } from '../entities/announcement.entity';
-import { AnnouncementTarget } from '../enums/announcement.enums';
+import { AnnouncementStatus, AnnouncementTarget } from '../enums/announcement.enums';
 
 export interface AnnouncementFilter {
   status?: string;
@@ -15,4 +15,19 @@ export interface IAnnouncementRepository {
   findById(id: string): Promise<Announcement | null>;
   findActive(target: AnnouncementTarget): Promise<Announcement | null>;
   findAll(filter: AnnouncementFilter): Promise<{ data: Announcement[]; total: number }>;
+
+  /**
+   * Update only the status of an announcement (for scheduler transitions)
+   */
+  updateStatus(id: string, status: AnnouncementStatus): Promise<Announcement>;
+
+  /**
+   * Find announcements ready to be activated (SCHEDULED with startedAt <= now)
+   */
+  findReadyToActivate(): Promise<Announcement[]>;
+
+  /**
+   * Find announcements ready to expire (ACTIVE with expiredAt <= now)
+   */
+  findReadyToExpire(): Promise<Announcement[]>;
 }

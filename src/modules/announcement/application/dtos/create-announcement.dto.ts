@@ -1,8 +1,8 @@
-import { Action } from 'rxjs/internal/scheduler/Action';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
-import { AnnouncementTarget, AnnouncementType } from '../../domain/enums/announcement.enums';
+import { IsDate, IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+
+import { AnnouncementStatus, AnnouncementTarget, AnnouncementType } from '../../domain/enums/announcement.enums';
 
 export class CreateAnnouncementDto {
   @ApiProperty({
@@ -38,6 +38,16 @@ export class CreateAnnouncementDto {
   @IsOptional()
   @IsEnum(AnnouncementTarget)
   target?: AnnouncementTarget;
+
+  @ApiPropertyOptional({
+    enum: [AnnouncementStatus.DRAFT, AnnouncementStatus.SCHEDULED, AnnouncementStatus.ACTIVE],
+    description: 'Initial status of the announcement',
+    default: AnnouncementStatus.DRAFT,
+    example: AnnouncementStatus.SCHEDULED,
+  })
+  @IsOptional()
+  @IsIn([AnnouncementStatus.DRAFT, AnnouncementStatus.SCHEDULED, AnnouncementStatus.ACTIVE])
+  status?: AnnouncementStatus;
 
   @ApiPropertyOptional({
     description: 'Start date for the announcement',

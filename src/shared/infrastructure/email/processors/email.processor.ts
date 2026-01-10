@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Inject } from '@nestjs/common';
 import { EMAIL_SERVICE, LOGGER_SERVICE } from '@shared/constants/injection-tokens';
+import { QUEUE_NAMES } from '@shared/constants/queue.constants';
 import type { ILogger } from '@shared/infrastructure/logging/interfaces/logger.interface';
 import type { Job } from 'bullmq';
 import type { IEmailService } from '../interfaces/email.interface';
@@ -14,7 +15,7 @@ export interface MagicLinkEmailJobData {
 
 export type EmailJobData = MagicLinkEmailJobData;
 
-@Processor('email')
+@Processor(QUEUE_NAMES.EMAIL)
 export class EmailProcessor extends WorkerHost {
   constructor(
     @Inject(EMAIL_SERVICE) private readonly emailService: IEmailService,

@@ -2,170 +2,137 @@
 
 ## Overview
 
-The queue layer provides an abstracted interface for background job processing using BullMQ.
+The queue layer provides an abstracted interface for background job processing using BullMQ with NestJS integration.
 
 ## Structure
 
 ```
 src/shared/infrastructure/queue/
-├── queue.module.ts
+├── queue.module.ts           # Global BullMQ configuration
 ├── interfaces/
-│   └── queue.interface.ts
+│   └── queue.interface.ts    # IQueueService interface
 └── bullmq/
-    └── bullmq-queue.service.ts
+    ├── bullmq-queue.service.ts
+    └── bull-board.setup.ts   # Bull Board monitoring
 ```
 
-## Interface
+## Queue Configuration
 
-Location: `src/shared/infrastructure/queue/interfaces/queue.interface.ts`
+The `QueueModule` provides global BullMQ configuration with Redis connection:
 
 ```typescript
-export interface JobOptions {
-  priority?: number;
-  delay?: number;
-  attempts?: number;
-  backoff?: { type: "exponential" | "fixed"; delay: number };
-  removeOnComplete?: boolean | number;
-  removeOnFail?: boolean | number;
-}
-
-export interface IQueueService {
-  add<T>(
-    queueName: string,
-    jobName: string,
-    data: T,
-    options?: JobOptions
-  ): Promise<string>;
-  addUnique<T>(
-    queueName: string,
-    jobName: string,
-    data: T,
-    uniqueKey: string,
-    ttl?: number
-  ): Promise<string | null>;
-  remove(queueName: string, jobId: string): Promise<void>;
-  clean(queueName: string): Promise<void>;
-  pause(queueName: string): Promise<void>;
-  resume(queueName: string): Promise<void>;
-}
+// queue.module.ts
+@Global()
+@Module({
+  imports: [
+    BullModule.forRootAsync({
+      useFactory: (config: TypedConfigService) => ({
+        connection: {
+          host: config.queue.redis.host,
+          port: config.queue.redis.port,
+          password: config.queue.redis.password,
+        },
+      }),
+    }),
+  ],
+  exports: [QUEUE_SERVICE, BullModule],
+})
+export class QueueModule {}
 ```
 
-## BullMQQueueService
+## Queue Constants
 
-The implementation manages multiple queues dynamically:
-
-- Creates queues on-demand
-- Uses Redis for persistence
-- Integrates with cache for deduplication via `addUnique()`
-
-## Usage
-
-### Adding Jobs
+All queue names are centralized in `shared/constants/queue.constants.ts`:
 
 ```typescript
-import { Inject, Injectable } from "@nestjs/common";
-import { QUEUE_SERVICE } from "@shared/constants/injection-tokens";
-import type { IQueueService } from "@shared/infrastructure/queue/interfaces/queue.interface";
+export const QUEUE_NAMES = {
+  EMAIL: "email",
+  ANNOUNCEMENT: "announcement",
+} as const;
 
-@Injectable()
-export class EmailService {
-  constructor(@Inject(QUEUE_SERVICE) private readonly queue: IQueueService) {}
-
-  async sendWelcomeEmail(userId: string, email: string): Promise<void> {
-    await this.queue.add("email", "welcome", {
-      userId,
-      email,
-      template: "welcome",
-    });
-  }
-
-  async sendWithOptions(data: EmailData): Promise<void> {
-    await this.queue.add("email", "send", data, {
-      priority: 1,
-      attempts: 5,
-      backoff: { type: "exponential", delay: 1000 },
-    });
-  }
-}
+export const JOB_NAMES = {
+  MAGIC_LINK: "magic-link", // Email
+  ACTIVATE: "activate", // Announcement
+  EXPIRE: "expire", // Announcement
+} as const;
 ```
 
-### Preventing Duplicate Jobs
+## Creating Processors
 
-Use `addUnique()` to prevent duplicate jobs:
-
-```typescript
-async sendPasswordReset(email: string): Promise<void> {
-  // Only one reset email per user every 5 minutes
-  const jobId = await this.queue.addUnique(
-    'email',
-    'password-reset',
-    { email },
-    `password-reset:${email}`,
-    300, // 5 minutes TTL
-  );
-
-  if (jobId === null) {
-    this.logger.info('Duplicate job prevented', { email });
-  }
-}
-```
-
-## Creating Workers
-
-Workers process jobs from queues. Create them in the appropriate module:
+Use the `@Processor` decorator with centralized queue constants:
 
 ```typescript
-// src/modules/email/infrastructure/processors/email.processor.ts
 import { Processor, WorkerHost } from "@nestjs/bullmq";
-import { Job } from "bullmq";
+import { QUEUE_NAMES } from "@shared/constants/queue.constants";
 
-@Processor("email")
+@Processor(QUEUE_NAMES.EMAIL)
 export class EmailProcessor extends WorkerHost {
   async process(job: Job<EmailJobData>): Promise<void> {
     switch (job.name) {
-      case "welcome":
-        await this.sendWelcome(job.data);
-        break;
-      case "password-reset":
-        await this.sendPasswordReset(job.data);
+      case "magic-link":
+        await this.sendMagicLink(job.data);
         break;
     }
-  }
-
-  private async sendWelcome(data: EmailJobData): Promise<void> {
-    // Send email logic
-  }
-
-  private async sendPasswordReset(data: EmailJobData): Promise<void> {
-    // Send email logic
   }
 }
 ```
 
-Register the processor in the module:
+## Registering Queues in Modules
+
+Each module registers its queue via `BullModule.registerQueue()`:
 
 ```typescript
 @Module({
-  imports: [BullModule.registerQueue({ name: "email" })],
+  imports: [BullModule.registerQueue({ name: QUEUE_NAMES.EMAIL })],
   providers: [EmailProcessor],
 })
 export class EmailModule {}
 ```
 
+## Adding Jobs via IQueueService
+
+```typescript
+@Injectable()
+export class AnnouncementSchedulerService {
+  constructor(@Inject(QUEUE_SERVICE) private readonly queue: IQueueService) {}
+
+  async scheduleActivation(announcement: Announcement): Promise<string> {
+    return this.queue.add(
+      QUEUE_NAMES.ANNOUNCEMENT,
+      `activate:${announcement.id}`,
+      { announcementId: announcement.id, action: "activate" },
+      { delay: delayMs, removeOnComplete: true }
+    );
+  }
+}
+```
+
+## Delayed Jobs
+
+For scheduled tasks, use the `delay` option:
+
+```typescript
+await this.queue.add(queueName, jobName, data, {
+  delay: 3600000, // 1 hour in milliseconds
+  removeOnComplete: true,
+  removeOnFail: 100,
+});
+```
+
+## Monitoring
+
+- **Development**: Bull Board at `http://localhost:7000/admin/queues`
+- Displays all queues defined in `QUEUE_NAMES`
+
 ## Queue Naming Conventions
 
 ```
-{domain}           -> email, notification, report
+{domain}           -> email, announcement, notification
 ```
 
 Job naming:
 
 ```
-{action}           -> send, process, generate
-{entity}.{action}  -> user.created, order.completed
+{action}           -> send, activate, expire
+{action}:{id}      -> activate:abc123
 ```
-
-## Monitoring
-
-- **Development**: Bull Board is available at `http://localhost:3000/admin/queues` (or configured port)
-- **Docker**: BullMQ Board is also available at `http://localhost:3001` when running with docker-compose.

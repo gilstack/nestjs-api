@@ -10,7 +10,7 @@ export async function setupBullBoard(
   app: INestApplication,
   config: TypedConfigService,
 ): Promise<void> {
-  // Only setup Bull Board in development
+  // only setup in development
   if (config.app.env !== 'development') {
     return;
   }
@@ -21,20 +21,22 @@ export async function setupBullBoard(
     password: config.queue.redis.password || undefined,
   };
 
-  // Create queue instances for Bull Board
-  const emailQueue = new Queue(QUEUE_NAMES.EMAIL, { connection });
+  // create queue instances
+  const queues = Object.values(QUEUE_NAMES).map(
+    (queueName) => new BullMQAdapter(new Queue(queueName, { connection })),
+  );
 
-  // Create Fastify adapter for Bull Board
+  // create Fastify adapter
   const serverAdapter = new FastifyAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
-  // Create Bull Board with all queues
+  // create board with all queues
   createBullBoard({
-    queues: [new BullMQAdapter(emailQueue)],
+    queues,
     serverAdapter,
   });
 
-  // Register the Bull Board plugin with Fastify
+  // register plugin with Fastify
   const fastifyInstance = app.getHttpAdapter().getInstance();
   await fastifyInstance.register(serverAdapter.registerPlugin(), {
     prefix: '/admin/queues',
