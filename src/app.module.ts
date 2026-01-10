@@ -2,6 +2,7 @@
 import { ConfigModule } from '@config/config.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UserModule } from '@modules/user/user.module';
+import { AnnouncementModule } from '@modules/announcement/announcement.module';
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@shared/infrastructure/cache/cache.module';
 import { DatabaseModule } from '@shared/infrastructure/database/database.module';
@@ -23,6 +24,7 @@ import { ThrottlerModule } from '@shared/infrastructure/throttler/throttler.modu
     ThrottlerModule,
     UserModule,
     AuthModule,
+    AnnouncementModule,
   ],
 })
 export class AppModule {}

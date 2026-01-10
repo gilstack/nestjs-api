@@ -29,6 +29,28 @@ enum UserRole {
   ADMIN
 }
 
+enum AnnouncementType {
+  INFO
+  WARNING
+  NEW
+  OFFER
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  EXPIRED
+  DELETED
+}
+
+enum AnnouncementTarget {
+  ALL
+  LOGGED_IN
+  GUEST
+  USER
+}
+
 model User {
   id       String @id @default(uuid())
   username String
@@ -49,8 +71,9 @@ model User {
   deletedAt  DateTime? @map("deleted_at")
 
   // relations
-  accounts Account[]
-  session  Session?
+  accounts      Account[]
+  session       Session?
+  announcements Announcement[]
 
   // indexes
   @@unique([username, tag])
@@ -106,4 +129,29 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([expiresAt])
+}
+
+model Announcement {
+  id      String             @id @default(cuid())
+  content String
+  url     String?
+  type    AnnouncementType
+  status  AnnouncementStatus @default(DRAFT)
+  target  AnnouncementTarget @default(ALL)
+
+  // relations
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String @map("creator_id")
+
+  // schedule
+  startedAt DateTime  @default(now()) @map("started_at")
+  expiredAt DateTime? @map("expired_at")
+
+  // timestamps
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([status, target])
+  @@index([startedAt, expiredAt])
 }

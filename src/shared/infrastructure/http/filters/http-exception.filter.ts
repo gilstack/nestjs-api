@@ -151,7 +151,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       if (status >= 500) {
         this.logger.error('Server error', exception, logContext);
       } else {
-        this.logger.warn('Client error', logContext);
+        this.logger.warn('Client error', { ...logContext, exception });
       }
       return;
     }

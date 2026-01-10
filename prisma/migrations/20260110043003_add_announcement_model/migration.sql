@@ -7,6 +7,15 @@ CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACTIVE', 'INACTIVE', 'DELETED', 'S
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('GUEST', 'USER', 'MANAGER', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "AnnouncementType" AS ENUM ('INFO', 'WARNING', 'NEW', 'OFFER');
+
+-- CreateEnum
+CREATE TYPE "AnnouncementStatus" AS ENUM ('DRAFT', 'SCHEDULED', 'ACTIVE', 'EXPIRED', 'DELETED');
+
+-- CreateEnum
+CREATE TYPE "AnnouncementTarget" AS ENUM ('ALL', 'LOGGED_IN', 'GUEST', 'USER');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -64,6 +73,24 @@ CREATE TABLE "Session" (
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Announcement" (
+    "id" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "url" TEXT,
+    "type" "AnnouncementType" NOT NULL,
+    "status" "AnnouncementStatus" NOT NULL DEFAULT 'DRAFT',
+    "target" "AnnouncementTarget" NOT NULL DEFAULT 'ALL',
+    "creator_id" TEXT NOT NULL,
+    "started_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expired_at" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "deleted_at" TIMESTAMP(3),
+
+    CONSTRAINT "Announcement_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "User_role_status_idx" ON "User"("role", "status");
 
@@ -91,8 +118,17 @@ CREATE UNIQUE INDEX "Session_user_id_key" ON "Session"("user_id");
 -- CreateIndex
 CREATE INDEX "Session_expires_at_idx" ON "Session"("expires_at");
 
+-- CreateIndex
+CREATE INDEX "Announcement_status_target_idx" ON "Announcement"("status", "target");
+
+-- CreateIndex
+CREATE INDEX "Announcement_started_at_expired_at_idx" ON "Announcement"("started_at", "expired_at");
+
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Announcement" ADD CONSTRAINT "Announcement_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
