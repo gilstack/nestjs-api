@@ -17,7 +17,7 @@ The application is built on a modern, type-safe stack:
 
 - **Runtime**: Node.js 20+
 - **Framework**: NestJS 11 (Fastify adapter)
-- **Database**: PostgreSQL 16 with Prisma 6
+- **Database**: PostgreSQL 16 with Prisma 7 (driver adapters)
 - **Cache**: Redis (IORedis)
 - **Queue System**: BullMQ
 - **Logging**: Pino
@@ -33,22 +33,26 @@ The application is built on a modern, type-safe stack:
 ### Installation
 
 1. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 2. Start required infrastructure (PostgreSQL, Redis):
+
    ```bash
    docker compose up -d
    ```
 
 3. Configure environment variables:
+
    ```bash
    cp .env.example .env
    # Update .env with your specific configuration
    ```
 
 4. Initialize the database:
+
    ```bash
    pnpm db:generate
    pnpm db:migrate
@@ -85,15 +89,15 @@ src/
 
 Detailed architectural and operational documentation is available in the `/docs` directory:
 
-| Topic | Description |
-|-------|-------------|
-| [Architecture](./docs/architecture.md) | high-level design patterns and principles |
-| [Authentication](./docs/auth.md) | Security flows, tokens, and guards |
-| [Database](./docs/database.md) | Schema design and ORM usage |
-| [Configuration](./docs/config.md) | Environment setup and validation |
-| [Queue System](./docs/queue.md) | Background job processing |
-| [Logging](./docs/logging.md) | Log aggregation and standards |
-| [API Documentation](./docs/api-docs.md) | Swagger/Scalar setup and usage |
+| Topic                                   | Description                               |
+| --------------------------------------- | ----------------------------------------- |
+| [Architecture](./docs/architecture.md)  | high-level design patterns and principles |
+| [Authentication](./docs/auth.md)        | Security flows, tokens, and guards        |
+| [Database](./docs/database.md)          | Schema design and ORM usage               |
+| [Configuration](./docs/config.md)       | Environment setup and validation          |
+| [Queue System](./docs/queue.md)         | Background job processing                 |
+| [Logging](./docs/logging.md)            | Log aggregation and standards             |
+| [API Documentation](./docs/api-docs.md) | Swagger/Scalar setup and usage            |
 
 ### API Reference
 
@@ -117,7 +121,7 @@ Interactive API documentation is available at `/docs` when running the server. T
 
 ### Coding Standards
 
-Please refer to the [.agents/rules/](./agents/rules/) directory for comprehensive coding guidelines, naming conventions, and architectural rules enforced in this project.
+Please refer to the [.agents/rules/](./.agents/rules/) directory for comprehensive coding guidelines, naming conventions, and architectural rules enforced in this project.
 
 ## License
 

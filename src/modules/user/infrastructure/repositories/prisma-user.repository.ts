@@ -3,7 +3,7 @@ import {
   AccountProvider as PrismaAccountProvider,
   UserRole as PrismaUserRole,
   UserStatus as PrismaUserStatus,
-} from '@prisma/client';
+} from '@shared/infrastructure/database/prisma/generated/client';
 
 // internal
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
@@ -22,7 +22,7 @@ export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.withSoftDelete.user.findFirst({
+    const user = await this.prisma.db.user.findFirst({
       where: { id },
       include: { accounts: true },
     });
@@ -34,7 +34,7 @@ export class PrismaUserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const normalizedEmail = email.toLowerCase().trim();
 
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.db.user.findFirst({
       where: {
         accounts: {
           some: {
@@ -54,7 +54,7 @@ export class PrismaUserRepository implements IUserRepository {
     userData: CreateUserInput,
     accountData: CreateAccountInput,
   ): Promise<User> {
-    const user = await this.prisma.user.create({
+    const user = await this.prisma.db.user.create({
       data: {
         username: userData.username,
         tag: userData.tag,
@@ -78,7 +78,7 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async update(id: string, data: UpdateUserInput): Promise<User> {
-    const user = await this.prisma.user.update({
+    const user = await this.prisma.db.user.update({
       where: { id },
       data: {
         ...data,
@@ -94,7 +94,7 @@ export class PrismaUserRepository implements IUserRepository {
   async activate(id: string, email: string): Promise<User> {
     const normalizedEmail = email.toLowerCase().trim();
 
-    const user = await this.prisma.user.update({
+    const user = await this.prisma.db.user.update({
       where: { id },
       data: {
         status: PrismaUserStatus.ACTIVE,

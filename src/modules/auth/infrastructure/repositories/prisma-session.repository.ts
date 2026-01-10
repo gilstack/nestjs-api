@@ -11,7 +11,7 @@ export class PrismaSessionRepository implements ISessionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateSessionData): Promise<Session> {
-    const record = await this.prisma.session.create({
+    const record = await this.prisma.db.session.create({
       data: {
         userId: data.userId,
         refreshTokenHash: data.refreshTokenHash,
@@ -33,7 +33,7 @@ export class PrismaSessionRepository implements ISessionRepository {
   }
 
   async findById(id: string): Promise<Session | null> {
-    const record = await this.prisma.session.findUnique({
+    const record = await this.prisma.db.session.findUnique({
       where: { id },
     });
 
@@ -51,7 +51,7 @@ export class PrismaSessionRepository implements ISessionRepository {
   }
 
   async findByUserId(userId: string): Promise<Session | null> {
-    const record = await this.prisma.session.findUnique({
+    const record = await this.prisma.db.session.findUnique({
       where: { userId },
     });
 
@@ -69,7 +69,7 @@ export class PrismaSessionRepository implements ISessionRepository {
   }
 
   async update(id: string, data: Partial<CreateSessionData>): Promise<Session> {
-    const record = await this.prisma.session.update({
+    const record = await this.prisma.db.session.update({
       where: { id },
       data,
     });
@@ -86,26 +86,26 @@ export class PrismaSessionRepository implements ISessionRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.session.delete({
+    await this.prisma.db.session.delete({
       where: { id },
     });
   }
 
   async deleteByUserId(userId: string): Promise<void> {
-    await this.prisma.session.deleteMany({
+    await this.prisma.db.session.deleteMany({
       where: { userId },
     });
   }
 
   async expireByUserId(userId: string): Promise<void> {
-    await this.prisma.session.updateMany({
+    await this.prisma.db.session.updateMany({
       where: { userId },
       data: { expiresAt: new Date() },
     });
   }
 
   async deleteExpired(): Promise<number> {
-    const result = await this.prisma.session.deleteMany({
+    const result = await this.prisma.db.session.deleteMany({
       where: { expiresAt: { lt: new Date() } },
     });
 

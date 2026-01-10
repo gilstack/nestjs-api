@@ -2,7 +2,7 @@
 
 ## Overview
 
-The database layer provides an abstracted interface for database operations, currently implemented with Prisma ORM.
+The database layer provides an abstracted interface for database operations, implemented with Prisma ORM (v7) using driver adapters.
 
 ## Structure
 
@@ -12,7 +12,11 @@ src/shared/infrastructure/database/
 ├── interfaces/
 │   └── database.interface.ts
 └── prisma/
-    └── prisma.service.ts
+    ├── prisma.service.ts
+    ├── extensions/
+    │   └── soft-delete.extension.ts
+    └── generated/
+        └── client.js
 ```
 
 ## Interface
@@ -31,44 +35,76 @@ export interface IDatabaseService {
 
 Location: `src/shared/infrastructure/database/prisma/prisma.service.ts`
 
-The service extends `PrismaClient` directly and implements `IDatabaseService`:
+The service uses **Prisma 7 with driver adapters** (`@prisma/adapter-pg`) for PostgreSQL connection management:
 
 ```typescript
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
+import { PrismaClient } from "./generated/client.js";
+import { softDeleteExtension } from "./extensions/soft-delete.extension";
+
+export type ExtendedPrismaClient = ReturnType<typeof createExtendedClient>;
+
+function createExtendedClient(baseClient: PrismaClient) {
+  return baseClient.$extends(softDeleteExtension);
+}
+
 @Injectable()
-export class PrismaService extends PrismaClient implements IDatabaseService, OnModuleInit, OnModuleDestroy {
-  constructor(config: TypedConfigService) {
-    super({
-      log: config.database.logging ? ['query', 'error', 'warn'] : ['error'],
+export class PrismaService
+  implements IDatabaseService, OnModuleInit, OnModuleDestroy
+{
+  private readonly client: ExtendedPrismaClient;
+  private readonly pool: pg.Pool;
+
+  constructor(private readonly config: TypedConfigService) {
+    this.pool = new pg.Pool({
+      connectionString: config.database.url,
+      ssl: config.database.ssl ? { rejectUnauthorized: false } : undefined,
     });
+
+    const adapter = new PrismaPg(this.pool);
+
+    const baseClient = new PrismaClient({
+      adapter,
+      log: config.database.logging ? ["query", "error", "warn"] : ["error"],
+    });
+
+    this.client = createExtendedClient(baseClient);
+  }
+
+  /**
+   * Get the extended Prisma client with soft delete support
+   */
+  get db(): ExtendedPrismaClient {
+    return this.client;
   }
 
   async connect(): Promise<void> {
-    await this.$connect();
+    await this.client.$connect();
   }
 
   async disconnect(): Promise<void> {
-    await this.$disconnect();
+    await this.client.$disconnect();
+    await this.pool.end();
   }
-
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.$queryRaw`SELECT 1`;
+      await this.client.$queryRaw`SELECT 1`;
       return true;
     } catch {
       return false;
     }
   }
-
-  /**
-   * Access the Prisma client extended with Soft Delete capabilities.
-   * Use this getter when you need to perform soft delete operations.
-   */
-  get withSoftDelete() {
-    return this.extended;
-  }
 }
 ```
+
+### Key Features
+
+- **Driver Adapters**: Uses `@prisma/adapter-pg` for native PostgreSQL connection pooling
+- **Connection Pooling**: Managed via `pg.Pool` for better performance
+- **Extensions**: Soft delete functionality via Prisma extensions
+- **Single Access Point**: All database access through `prisma.db`
 
 ## Soft Delete
 
@@ -78,41 +114,49 @@ The Prisma Service includes a custom extension for Soft Delete (`deletedAt` fiel
 
 ```typescript
 // Soft Delete a record
-await this.prisma.withSoftDelete.user.softDelete({
+await this.prisma.db.user.softDelete({
   where: { id: userId },
 });
 
 // Restore a record
-await this.prisma.withSoftDelete.user.restore({
+await this.prisma.db.user.restore({
   where: { id: userId },
 });
 
 // Find including deleted
-await this.prisma.withSoftDelete.user.findManyWithDeleted({
-  where: { email: '...' },
+await this.prisma.db.user.findManyWithDeleted({
+  where: { email: "..." },
 });
 ```
 
 ### Default Behavior
 
-Standard Prisma calls (`this.prisma.user.findMany`, etc.) automatically exclude records where `deletedAt` is not null, thanks to global query filters in the extension.
+Standard Prisma calls (`this.prisma.db.user.findMany`, etc.) automatically exclude records where `deletedAt` is not null, thanks to query filters in the extension.
 
 ## Usage
 
-### Direct Prisma Access
+### Repository Pattern (Recommended)
 
-For repository implementations that need Prisma-specific features:
+All database access should go through repositories using the `prisma.db` accessor:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@shared/infrastructure/database/prisma/prisma.service";
 
 @Injectable()
-export class UserRepository {
+export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findById(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findById(id: string): Promise<User | null> {
+    return this.prisma.db.user.findUnique({ where: { id } });
+  }
+
+  async create(data: CreateUserInput): Promise<User> {
+    return this.prisma.db.user.create({ data });
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.prisma.db.user.softDelete({ where: { id } });
   }
 }
 ```
@@ -122,14 +166,14 @@ export class UserRepository {
 For code that should be ORM-agnostic:
 
 ```typescript
-import { Inject, Injectable } from '@nestjs/common';
-import { DATABASE_SERVICE } from '@shared/constants/injection-tokens';
-import type { IDatabaseService } from '@shared/infrastructure/database/interfaces/database.interface';
+import { Inject, Injectable } from "@nestjs/common";
+import { DATABASE_SERVICE } from "@shared/constants/injection-tokens";
+import type { IDatabaseService } from "@shared/infrastructure/database/interfaces/database.interface";
 
 @Injectable()
 export class HealthService {
   constructor(
-    @Inject(DATABASE_SERVICE) private readonly db: IDatabaseService,
+    @Inject(DATABASE_SERVICE) private readonly db: IDatabaseService
   ) {}
 
   async checkDatabase(): Promise<boolean> {

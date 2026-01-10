@@ -6,12 +6,7 @@ import {
   ApiServiceUnavailableResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  HealthCheck,
-  HealthCheckResult,
-  HealthCheckService,
-  PrismaHealthIndicator,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
 
 // internal
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
@@ -22,7 +17,6 @@ import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.ser
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
-    private readonly prismaHealth: PrismaHealthIndicator,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -66,7 +60,12 @@ export class HealthController {
     description: 'Service is unhealthy. One or more dependencies are down.',
   })
   async check(): Promise<HealthCheckResult> {
-    return this.health.check([() => this.prismaHealth.pingCheck('database', this.prisma)]);
+    return this.health.check([
+      async () => {
+        const isHealthy = await this.prisma.healthCheck();
+        return { database: { status: isHealthy ? 'up' : 'down' } };
+      },
+    ]);
   }
 
   @Get('ready')
@@ -97,7 +96,12 @@ export class HealthController {
   })
   @ApiServiceUnavailableResponse({ description: 'Service is not ready to accept traffic.' })
   async readiness(): Promise<HealthCheckResult> {
-    return this.health.check([() => this.prismaHealth.pingCheck('database', this.prisma)]);
+    return this.health.check([
+      async () => {
+        const isHealthy = await this.prisma.healthCheck();
+        return { database: { status: isHealthy ? 'up' : 'down' } };
+      },
+    ]);
   }
 
   @Get('live')

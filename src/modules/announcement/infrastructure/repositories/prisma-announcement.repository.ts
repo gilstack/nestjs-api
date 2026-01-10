@@ -10,14 +10,14 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Announcement): Promise<Announcement> {
-    const raw = await this.prisma.announcement.create({
+    const raw = await this.prisma.db.announcement.create({
       data: AnnouncementMapper.toPersistence(data),
     });
     return AnnouncementMapper.toDomain(raw);
   }
 
   async update(id: string, data: Partial<Announcement>): Promise<Announcement> {
-    const raw = await this.prisma.announcement.update({
+    const raw = await this.prisma.db.announcement.update({
       where: { id },
       data: {
         content: data.content,
@@ -34,7 +34,7 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.announcement.update({
+    await this.prisma.db.announcement.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -44,7 +44,7 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
   }
 
   async findById(id: string): Promise<Announcement | null> {
-    const raw = await this.prisma.announcement.findUnique({
+    const raw = await this.prisma.db.announcement.findUnique({
       where: { id },
     });
     if (!raw) return null;
@@ -53,7 +53,7 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
 
   async findActive(target: AnnouncementTarget): Promise<Announcement | null> {
     const now = new Date();
-    const raw = await this.prisma.announcement.findFirst({
+    const raw = await this.prisma.db.announcement.findFirst({
       where: {
         status: 'ACTIVE',
         target: { in: [target, 'ALL'] },
@@ -80,13 +80,13 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
     if (target) where.target = target;
 
     const [raws, total] = await Promise.all([
-      this.prisma.announcement.findMany({
+      this.prisma.db.announcement.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.announcement.count({ where }),
+      this.prisma.db.announcement.count({ where }),
     ]);
 
     return {

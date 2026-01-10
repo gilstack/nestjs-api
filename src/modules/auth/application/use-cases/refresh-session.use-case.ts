@@ -43,7 +43,7 @@ export class RefreshSessionUseCase {
       throw AuthException.sessionExpired();
     }
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.db.user.findUnique({
       where: { id: session.userId },
       include: {
         accounts: {

@@ -15,13 +15,13 @@ This documentation covers the infrastructure layer of the Storagie API, includin
 
 ## Quick Reference
 
-| Layer | Interface | Implementation | Token |
-|-------|-----------|----------------|-------|
-| Database | `IDatabaseService` | `PrismaService` | `DATABASE_SERVICE` |
-| Cache | `ICacheService` | `RedisCacheService` / `MemoryCacheService` | `CACHE_SERVICE` |
-| Queue | `IQueueService` | `BullMQQueueService` | `QUEUE_SERVICE` |
-| Logging | `ILogger` | `PinoLoggerService` | `LOGGER_SERVICE` |
-| Email | `IEmailService` | `NodemailerEmailService` | `EMAIL_SERVICE` |
+| Layer    | Interface          | Implementation                             | Token              |
+| -------- | ------------------ | ------------------------------------------ | ------------------ |
+| Database | `IDatabaseService` | `PrismaService`                            | `DATABASE_SERVICE` |
+| Cache    | `ICacheService`    | `RedisCacheService` / `MemoryCacheService` | `CACHE_SERVICE`    |
+| Queue    | `IQueueService`    | `BullMQQueueService`                       | `QUEUE_SERVICE`    |
+| Logging  | `ILogger`          | `PinoLoggerService`                        | `LOGGER_SERVICE`   |
+| Email    | `IEmailService`    | `NodemailerEmailService`                   | `EMAIL_SERVICE`    |
 
 ## Directory Structure
 
@@ -40,18 +40,26 @@ src/
 │       ├── logging.config.ts
 │       └── queue.config.ts
 ├── modules/
-│   └── auth/                   # Authentication module
-│       ├── application/        # Use cases, DTOs, services
-│       ├── domain/             # Entities, repository interfaces
-│       └── infrastructure/     # Controllers, guards, strategies
+│   ├── auth/                   # Authentication module
+│   │   ├── application/        # Use cases, DTOs, services
+│   │   ├── domain/             # Entities, repository interfaces
+│   │   └── infrastructure/     # Controllers, guards, strategies
+│   ├── user/                   # User module
+│   └── announcement/           # Announcement module
 └── shared/
     ├── constants/
     │   └── injection-tokens.ts # DI tokens
+    ├── domain/
+    │   └── repositories/       # Base repository interfaces
     └── infrastructure/
         ├── database/
+        │   ├── interfaces/
+        │   └── prisma/
+        │       ├── prisma.service.ts
+        │       ├── extensions/     # Prisma extensions (soft delete)
+        │       └── generated/      # Generated Prisma client
         ├── cache/
         ├── queue/
         ├── logging/
         └── email/              # Email service and templates
 ```
-

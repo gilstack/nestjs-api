@@ -1,4 +1,4 @@
-import { Announcement as PrismaAnnouncement } from '@prisma/client';
+import { Announcement as PrismaAnnouncement } from '@shared/infrastructure/database/prisma/generated/client';
 import { Announcement } from '../../domain/entities/announcement.entity';
 import { AnnouncementStatus, AnnouncementTarget, AnnouncementType } from '../../domain/enums/announcement.enums';
 

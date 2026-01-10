@@ -27,13 +27,13 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
 
   // API Prefix
   app.setGlobalPrefix(appConfig.prefix, {
-    exclude: ['/'],
+    exclude: ['/', '/docs', '/reference'],
   });
 
-  // Cross Origin Resource Sharing
+  // CORS
   app.enableCors({
     origin: [appConfig.adminUrl, appConfig.frontendUrl],
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
   });
 
@@ -70,11 +70,11 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
     root: join(__dirname, '..', 'public'),
   });
 
-  // Documentation
-  setupSwagger(app);
-
   // Bull Board (development only)
   await setupBullBoard(app, typedConfigService);
+
+  // Documentation
+  setupSwagger(app);
 
   // Listening the application
   await app.listen(appConfig.port, '0.0.0.0');
