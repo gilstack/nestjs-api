@@ -13,7 +13,7 @@ export interface IAnnouncementRepository {
   update(id: string, data: Partial<Announcement>): Promise<Announcement>;
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Announcement | null>;
-  findActive(target: AnnouncementTarget): Promise<Announcement | null>;
+  findActive(target: AnnouncementTarget): Promise<Announcement[]>;
   findAll(filter: AnnouncementFilter): Promise<{ data: Announcement[]; total: number }>;
 
   /**

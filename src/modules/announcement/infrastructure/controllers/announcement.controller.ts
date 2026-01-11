@@ -74,13 +74,10 @@ export class AnnouncementController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get active announcement' })
-  @ApiOkResponse({ type: AnnouncementResponseDto })
-  @ApiNoContentResponse({ description: 'No active announcement' })
-  async getActive(@Req() req: any): Promise<AnnouncementResponseDto | void> {
+  @ApiOkResponse({ type: [AnnouncementResponseDto] })
+  async getActive(@Req() req: any): Promise<AnnouncementResponseDto[]> {
     const target = req.user ? AnnouncementTarget.LOGGED_IN : AnnouncementTarget.GUEST;
-    const result = await this.getActiveUseCase.execute(target);
-    if (!result) return;
-    return result;
+    return this.getActiveUseCase.execute(target);
   }
 
   @Patch(':id')

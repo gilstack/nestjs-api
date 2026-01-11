@@ -59,9 +59,9 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
     return AnnouncementMapper.toDomain(raw);
   }
 
-  async findActive(target: AnnouncementTarget): Promise<Announcement | null> {
+  async findActive(target: AnnouncementTarget): Promise<Announcement[]> {
     const now = new Date();
-    const raw = await this.prisma.db.announcement.findFirst({
+    const raws = await this.prisma.db.announcement.findMany({
       where: {
         status: 'ACTIVE',
         target: { in: [target, 'ALL'] },
@@ -72,8 +72,7 @@ export class PrismaAnnouncementRepository implements IAnnouncementRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    if (!raw) return null;
-    return AnnouncementMapper.toDomain(raw);
+    return raws.map(AnnouncementMapper.toDomain);
   }
 
   async findAll(filter: AnnouncementFilter): Promise<{ data: Announcement[]; total: number }> {

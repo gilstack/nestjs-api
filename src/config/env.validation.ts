@@ -28,7 +28,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  ADMIN_URL?: string;
+  DASHBOARD_URL?: string;
 
   @IsString()
   @IsOptional()
@@ -62,7 +62,7 @@ export class EnvironmentVariables {
   REFRESH_EXPIRES_IN: string = '1d';
 
   @IsString()
-  MAGIC_LINK_URL: string;
+  MAGIC_LINK_CALLBACK_PATH: string;
 
   @Transform(({ value }) => parseInt(value, 10))
   @IsNumber()

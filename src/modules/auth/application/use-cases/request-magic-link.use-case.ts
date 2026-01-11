@@ -15,6 +15,7 @@ import type { IQueueService } from '@shared/infrastructure/queue/interfaces/queu
 import type { IMagicLinkTokenRepository } from '../../domain/repositories/magic-link-token.repository';
 import type { RequestMagicLinkDto } from '../dtos';
 import { TokenService } from '../services/token.service';
+import { UserRole } from '@modules/user/domain/enums';
 
 @Injectable()
 export class RequestMagicLinkUseCase {
@@ -67,7 +68,12 @@ export class RequestMagicLinkUseCase {
     await this.magicLinkTokenRepository.create(normalizedEmail, tokenHash, expiresAt);
 
     // Build magic link URL
-    const magicLinkUrl = `${this.config.auth.magicLinkUrl}?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
+    const baseUrl =
+      existingUser?.role === UserRole.ADMIN
+        ? this.config.app.admin + this.config.auth.magicLinkCallbackPath
+        : this.config.app.frontend + this.config.auth.magicLinkCallbackPath;
+
+    const magicLinkUrl = `${baseUrl}?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
 
     // Queue email for async sending
     await this.queueService.add(QUEUE_NAMES.EMAIL, JOB_NAMES.MAGIC_LINK, {

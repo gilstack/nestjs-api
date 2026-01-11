@@ -11,9 +11,8 @@ export class GetActiveAnnouncementUseCase {
     private readonly repository: IAnnouncementRepository,
   ) {}
 
-  async execute(target: AnnouncementTarget): Promise<AnnouncementResponseDto | null> {
+  async execute(target: AnnouncementTarget): Promise<AnnouncementResponseDto[]> {
     const active = await this.repository.findActive(target);
-    if (!active) return null;
-    return new AnnouncementResponseDto(active);
+    return active.map((a) => new AnnouncementResponseDto(a));
   }
 }

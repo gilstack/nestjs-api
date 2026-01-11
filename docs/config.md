@@ -13,16 +13,18 @@ Location: `src/config/env.validation.ts`
 Validates environment variables using `class-validator` before the application starts:
 
 ```typescript
-import { validateEnv } from '@config/env.validation';
+import { validateEnv } from "@config/env.validation";
 
 // Throws if validation fails
 const env = validateEnv(process.env);
 ```
 
 Required variables:
+
 - `DATABASE_URL` - PostgreSQL connection string
 
 Optional variables with defaults:
+
 - `NODE_ENV` - defaults to `development`
 - `PORT` - defaults to `3000`
 - `API_PREFIX` - defaults to `api`
@@ -31,15 +33,15 @@ Optional variables with defaults:
 
 Each domain has its own config file in `src/config/configs/`:
 
-| File | Namespace | Description |
-|------|-----------|-------------|
-| `app.config.ts` | `app` | Application settings |
-| `database.config.ts` | `database` | Database connection |
-| `cache.config.ts` | `cache` | Cache driver and TTL |
-| `queue.config.ts` | `queue` | BullMQ settings |
-| `logging.config.ts` | `logging` | Log level and formatting |
-| `auth.config.ts` | `auth` | JWT, cookies, magic link |
-| `email.config.ts` | `email` | SMTP settings |
+| File                 | Namespace  | Description              |
+| -------------------- | ---------- | ------------------------ |
+| `app.config.ts`      | `app`      | Application settings     |
+| `database.config.ts` | `database` | Database connection      |
+| `cache.config.ts`    | `cache`    | Cache driver and TTL     |
+| `queue.config.ts`    | `queue`    | BullMQ settings          |
+| `logging.config.ts`  | `logging`  | Log level and formatting |
+| `auth.config.ts`     | `auth`     | JWT, cookies, magic link |
+| `email.config.ts`    | `email`    | SMTP settings            |
 
 ### 3. TypedConfigService
 
@@ -48,7 +50,7 @@ Location: `src/config/config.service.ts`
 Provides type-safe access to all configurations:
 
 ```typescript
-import { TypedConfigService } from '@config/config.service';
+import { TypedConfigService } from "@config/config.service";
 
 @Injectable()
 export class MyService {
@@ -69,11 +71,11 @@ export class MyService {
 
 ```typescript
 interface AppConfig {
-  env: string;           // NODE_ENV
-  port: number;          // PORT
-  prefix: string;        // API_PREFIX
-  adminUrl: string;      // ADMIN_URL
-  frontendUrl: string;   // FRONTEND_URL
+  env: string; // NODE_ENV
+  port: number; // PORT
+  prefix: string; // API_PREFIX
+  adminUrl: string; // ADMIN_URL
+  frontendUrl: string; // FRONTEND_URL
 }
 ```
 
@@ -81,8 +83,8 @@ interface AppConfig {
 
 ```typescript
 interface DatabaseConfig {
-  url: string;      // DATABASE_URL
-  ssl: boolean;     // DB_SSL
+  url: string; // DATABASE_URL
+  ssl: boolean; // DB_SSL
   logging: boolean; // DB_LOGGING
 }
 ```
@@ -91,13 +93,13 @@ interface DatabaseConfig {
 
 ```typescript
 interface CacheConfig {
-  driver: 'redis' | 'memory';  // CACHE_DRIVER
-  ttl: number;                  // CACHE_TTL (seconds)
+  driver: "redis" | "memory"; // CACHE_DRIVER
+  ttl: number; // CACHE_TTL (seconds)
   redis: {
-    host: string;     // REDIS_HOST
-    port: number;     // REDIS_PORT
+    host: string; // REDIS_HOST
+    port: number; // REDIS_PORT
     password?: string; // REDIS_PASSWORD
-    db: number;       // REDIS_DB
+    db: number; // REDIS_DB
   };
 }
 ```
@@ -112,12 +114,12 @@ interface QueueConfig {
     password?: string;
   };
   defaultJobOptions: {
-    attempts: number;      // QUEUE_RETRY_ATTEMPTS
-    backoff: { type: 'exponential'; delay: number };
+    attempts: number; // QUEUE_RETRY_ATTEMPTS
+    backoff: { type: "exponential"; delay: number };
     removeOnComplete: number;
     removeOnFail: number;
   };
-  concurrency: number;     // QUEUE_CONCURRENCY
+  concurrency: number; // QUEUE_CONCURRENCY
 }
 ```
 
@@ -125,10 +127,10 @@ interface QueueConfig {
 
 ```typescript
 interface LoggingConfig {
-  level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'; // LOG_LEVEL
-  prettyPrint: boolean;           // true if NODE_ENV !== 'production'
+  level: "trace" | "debug" | "info" | "warn" | "error" | "fatal"; // LOG_LEVEL
+  prettyPrint: boolean; // true if NODE_ENV !== 'production'
   enablePerformanceLogging: boolean; // ENABLE_PERF_LOGGING
-  enableQueryLogging: boolean;       // ENABLE_QUERY_LOGGING
+  enableQueryLogging: boolean; // ENABLE_QUERY_LOGGING
 }
 ```
 
@@ -136,14 +138,14 @@ interface LoggingConfig {
 
 ```typescript
 interface AuthConfig {
-  accessSecret: string;       // ACCESS_SECRET (min 32 chars)
-  accessExpiresIn: number;    // ACCESS_EXPIRES_IN (minutes, default: 10)
-  refreshSecret: string;      // REFRESH_SECRET (min 32 chars)
-  refreshExpiresIn: number;   // REFRESH_EXPIRES_IN (days, default: 7)
-  magicLinkUrl: string;       // MAGIC_LINK_URL
+  accessSecret: string; // ACCESS_SECRET (min 32 chars)
+  accessExpiresIn: number; // ACCESS_EXPIRES_IN (minutes, default: 10)
+  refreshSecret: string; // REFRESH_SECRET (min 32 chars)
+  refreshExpiresIn: number; // REFRESH_EXPIRES_IN (days, default: 7)
+  magicLinkCallbackPath: string; // MAGIC_LINK_CALLBACK_PATH
   magicLinkExpiresIn: number; // MAGIC_LINK_EXPIRES_IN (seconds)
-  cookieDomain: string;       // COOKIE_DOMAIN
-  cookieSecure: boolean;      // COOKIE_SECURE
+  cookieDomain: string; // COOKIE_DOMAIN
+  cookieSecure: boolean; // COOKIE_SECURE
 }
 ```
 
@@ -151,11 +153,11 @@ interface AuthConfig {
 
 ```typescript
 interface EmailConfig {
-  host: string;     // SMTP_HOST
-  port: number;     // SMTP_PORT
-  user?: string;    // SMTP_USER (optional)
-  pass?: string;    // SMTP_PASS (optional)
-  from: string;     // SMTP_FROM
+  host: string; // SMTP_HOST
+  port: number; // SMTP_PORT
+  user?: string; // SMTP_USER (optional)
+  pass?: string; // SMTP_PASS (optional)
+  from: string; // SMTP_FROM
 }
 ```
 
@@ -165,30 +167,33 @@ interface EmailConfig {
 
 ```typescript
 // src/config/configs/auth.config.ts
-import { registerAs } from '@nestjs/config';
+import { registerAs } from "@nestjs/config";
 
 export interface AuthConfig {
   jwtSecret: string;
   jwtExpiresIn: string;
 }
 
-export default registerAs('auth', (): AuthConfig => ({
-  jwtSecret: process.env.JWT_SECRET!,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
-}));
+export default registerAs(
+  "auth",
+  (): AuthConfig => ({
+    jwtSecret: process.env.JWT_SECRET!,
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
+  })
+);
 ```
 
 2. Add to config index:
 
 ```typescript
 // src/config/index.ts
-import authConfig from './configs/auth.config';
+import authConfig from "./configs/auth.config";
 
 export const configs = [
   appConfig,
   databaseConfig,
   // ...
-  authConfig,  // Add here
+  authConfig, // Add here
 ];
 ```
 
@@ -196,12 +201,12 @@ export const configs = [
 
 ```typescript
 // src/config/config.service.ts
-import type { AuthConfig } from './configs/auth.config';
+import type { AuthConfig } from "./configs/auth.config";
 
 @Injectable()
 export class TypedConfigService {
   get auth(): AuthConfig {
-    return this.configService.get<AuthConfig>('auth')!;
+    return this.configService.get<AuthConfig>("auth")!;
   }
 }
 ```

@@ -163,8 +163,8 @@ ACCESS_EXPIRES_IN=10          # minutes
 REFRESH_EXPIRES_IN=7          # days
 MAGIC_LINK_EXPIRES_IN=1800    # seconds (30 min)
 
-# Magic Link URL (frontend callback)
-MAGIC_LINK_URL=http://localhost:3000/auth/verify
+# Magic Link URL (frontend or dashboard + callback)
+MAGIC_LINK_CALLBACK_PATH=/auth/verify
 
 # Cookie Settings
 COOKIE_DOMAIN=localhost
