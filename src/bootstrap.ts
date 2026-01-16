@@ -32,7 +32,7 @@ export const bootstrap = async (app: NestFastifyApplication): Promise<void> => {
 
   // CORS
   app.enableCors({
-    origin: [appConfig.adminUrl, appConfig.frontendUrl],
+    origin: [appConfig.admin, appConfig.frontend],
     methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
   });
