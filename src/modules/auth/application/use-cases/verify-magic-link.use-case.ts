@@ -141,7 +141,7 @@ export class VerifyMagicLinkUseCase {
       httpOnly: true,
       secure: isSecure,
       sameSite: 'lax',
-      path: '/api/auth/refresh',
+      path: '/',
       maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
     });
 

@@ -93,11 +93,11 @@ export class RefreshSessionUseCase {
     });
 
     response.cookie('refresh', newRefreshTokenJwt, {
-        httpOnly: true,
-        secure: isSecure,
-        sameSite: 'lax',
-        path: '/api/auth/refresh',
-        maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
     });
 
     this.logger.info('Session refreshed and rotated', { userId: user.id });

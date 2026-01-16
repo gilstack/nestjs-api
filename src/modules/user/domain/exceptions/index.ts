@@ -1,0 +1,1 @@
+export { UserException, type UserErrorCode } from './user.exception';
