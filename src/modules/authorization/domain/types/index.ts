@@ -1,4 +1,4 @@
-import type { PureAbility } from '@casl/ability';
+import type { MongoAbility } from '@casl/ability';
 import type { Announcement } from '@modules/announcement/domain/entities/announcement.entity';
 import type { MagicLinkToken } from '@modules/authentication/domain/entities/magic-link-token.entity';
 import type { Session } from '@modules/authentication/domain/entities/session.entity';
@@ -14,4 +14,4 @@ export type AppSubjects =
   | User
   | 'all';
 
-export type AppAbility = PureAbility<[Action, AppSubjects]>;
+export type AppAbility = MongoAbility<[Action, AppSubjects]>;

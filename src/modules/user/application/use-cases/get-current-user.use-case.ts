@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { AbilityFactory } from '@modules/authorization/application/factories/ability.factory';
 
 // internal
 import { REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
@@ -14,6 +15,7 @@ export class GetCurrentUserUseCase {
   constructor(
     @Inject(REPOSITORY_TOKENS.USER)
     private readonly userRepository: IUserRepository,
+    private readonly abilityFactory: AbilityFactory,
   ) {}
 
   async execute(userId: string): Promise<UserResponseDto> {
@@ -21,7 +23,10 @@ export class GetCurrentUserUseCase {
     if (!user) {
       throw UserException.notFound();
     }
-    return UserMapper.toResponseDto(user);
+    
+    const rules = this.abilityFactory.createRulesForUser(user);
+
+    return UserMapper.toResponseDto(user, rules);
   }
 }
 

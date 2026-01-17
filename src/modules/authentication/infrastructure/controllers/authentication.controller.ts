@@ -148,6 +148,6 @@ export class AuthenticationController {
     @CurrentUser() user: RequestUser,
     @Res({ passthrough: true }) response: FastifyReply,
   ): Promise<void> {
-    await this.logoutUseCase.execute(user.userId, response);
+    await this.logoutUseCase.execute(user.id, response);
   }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthorizationModule } from '../authorization/authorization.module';
 
 // internal
 import { REPOSITORY_TOKENS } from '@shared/constants/injection-tokens';
@@ -9,6 +10,7 @@ import { UserController } from './infrastructure/controllers/user.controller';
 import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
 
 @Module({
+  imports: [AuthorizationModule],
   controllers: [UserController],
   providers: [
     GetCurrentUserUseCase,

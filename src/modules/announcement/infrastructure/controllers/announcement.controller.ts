@@ -63,7 +63,7 @@ export class AnnouncementController {
     @Body() dto: CreateAnnouncementDto,
     @Req() req: any,
   ): Promise<AnnouncementResponseDto> {
-    const creatorId = req.user.userId;
+    const creatorId = req.user.id;
     return this.createUseCase.execute(dto, creatorId);
   }
 

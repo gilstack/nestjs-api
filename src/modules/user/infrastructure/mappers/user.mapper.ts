@@ -2,7 +2,7 @@ import type { User } from '../../domain/entities/user.entity';
 import type { UserResponseDto } from '../../application/dtos/user.response.dto';
 
 export class UserMapper {
-  static toResponseDto(user: User): UserResponseDto {
+  static toResponseDto(user: User, rules: any[] = []): UserResponseDto {
     const emailAccount = user.accounts?.find((acc) => acc.provider === 'EMAIL');
     const email = emailAccount?.identifier || user.accounts?.[0]?.identifier || '';
 
@@ -19,6 +19,7 @@ export class UserMapper {
       verifiedAt: user.verifiedAt,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      rules,
     };
   }
 }

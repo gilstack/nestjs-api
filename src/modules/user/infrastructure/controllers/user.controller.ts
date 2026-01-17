@@ -18,6 +18,6 @@ export class UserController {
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiOkResponse({ type: UserResponseDto })
   async me(@CurrentUser() user: RequestUser): Promise<UserResponseDto> {
-    return this.getCurrentUserUseCase.execute(user.userId);
+    return this.getCurrentUserUseCase.execute(user.id);
   }
 }

@@ -15,7 +15,7 @@ export interface JwtPayload {
 }
 
 export interface RequestUser {
-  userId: string;
+  id: string;
   email: string;
   role: string;
 }
@@ -39,7 +39,7 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     return {
-      userId: payload.sub,
+      id: payload.sub,
       email: payload.email,
       role: payload.role,
     };

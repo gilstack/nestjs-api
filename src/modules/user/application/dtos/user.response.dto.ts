@@ -1,3 +1,4 @@
+import type { PackRule } from '@casl/ability/extra';
 import { ApiProperty } from '@nestjs/swagger';
 import type { UserStatus, UserRole } from '../../domain/enums';
 
@@ -37,4 +38,7 @@ export class UserResponseDto {
 
   @ApiProperty({ description: 'Last update date' })
   updatedAt: Date;
+
+  @ApiProperty({ description: 'Permissions rules' })
+  rules: PackRule<any>[];
 }
