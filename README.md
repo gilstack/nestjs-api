@@ -38,32 +38,43 @@ The application is built on a modern, type-safe stack:
    pnpm install
    ```
 
-2. Start required infrastructure (PostgreSQL, Redis):
-
-   ```bash
-   docker compose up -d
-   ```
-
-3. Configure environment variables:
+2. Configure environment:
 
    ```bash
    cp .env.example .env
-   # Update .env with your specific configuration
+   # For local dev: edit .env and change postgres/redis/mailhog → localhost
    ```
 
-4. Initialize the database:
+### Running with Docker (Recommended)
 
-   ```bash
-   pnpm db:generate
-   pnpm db:migrate
-   ```
+Start the complete development environment:
 
-5. Start the development server:
-   ```bash
-   pnpm dev
-   ```
+```bash
+# Build and start all services (API + Postgres + Redis + MailHog)
+docker compose up -d --build
 
-The API will be available at `http://localhost:3000` (or the port defined in `PORT` env var).
+# View logs
+docker compose logs -f api
+```
+
+Migrations run automatically on container startup.
+
+### Running Locally (Hybrid Mode)
+
+Run infrastructure in Docker, API locally:
+
+```bash
+# Start infrastructure only
+docker compose up -d postgres redis mailhog
+
+# Run API locally
+pnpm dev
+
+# Apply migrations
+pnpm db:migrate
+```
+
+The API will be available at `http://localhost:8000`.
 
 ## Project Structure
 
@@ -112,12 +123,17 @@ Interactive API documentation is available at `/docs` when running the server. T
 
 ### Available Scripts
 
-- `pnpm dev`: Start development server with hot reload
-- `pnpm build`: Compile project for production
-- `pnpm prod`: Start production server
-- `pnpm lint`: Run static analysis (Biome)
-- `pnpm format`: Format codebase (Biome)
-- `pnpm db:migrate`: Apply database migrations
+| Script                 | Description                              |
+| ---------------------- | ---------------------------------------- |
+| `pnpm dev`             | Start development server with hot reload |
+| `pnpm dev:apm`         | Development with New Relic APM enabled   |
+| `pnpm build`           | Compile project for production           |
+| `pnpm prod`            | Start production server                  |
+| `pnpm prod:apm`        | Production with New Relic APM            |
+| `pnpm lint`            | Run static analysis (Biome)              |
+| `pnpm format`          | Format codebase (Biome)                  |
+| `pnpm db:migrate`      | Apply database migrations (dev)          |
+| `pnpm db:migrate:prod` | Apply migrations (production)            |
 
 ### Coding Standards
 

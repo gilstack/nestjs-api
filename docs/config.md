@@ -42,6 +42,7 @@ Each domain has its own config file in `src/config/configs/`:
 | `logging.config.ts`  | `logging`  | Log level and formatting |
 | `auth.config.ts`     | `auth`     | JWT, cookies, magic link |
 | `email.config.ts`    | `email`    | SMTP settings            |
+| `newrelic.config.ts` | `newrelic` | APM configuration        |
 
 ### 3. TypedConfigService
 
@@ -161,6 +162,18 @@ interface EmailConfig {
 }
 ```
 
+### NewRelicConfig
+
+```typescript
+interface NewRelicConfig {
+  enabled: boolean; // NEW_RELIC_ENABLED
+  appName: string; // NEW_RELIC_APP_NAME
+  licenseKey: string; // NEW_RELIC_LICENSE_KEY
+  distributedTracingEnabled: boolean; // NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+  logLevel: string; // NEW_RELIC_LOG_LEVEL
+}
+```
+
 ## Adding a New Config
 
 1. Create the config file:
@@ -179,7 +192,7 @@ export default registerAs(
   (): AuthConfig => ({
     jwtSecret: process.env.JWT_SECRET!,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || "1d",
-  })
+  }),
 );
 ```
 

@@ -12,6 +12,8 @@ This documentation covers the infrastructure layer of the Storagie API, includin
 6. [Logging System](./logging.md)
 7. [Authentication System](./auth.md)
 8. [Email System](./email.md)
+9. [Docker Environment](./docker.md)
+10. [APM (New Relic)](./apm.md)
 
 ## Quick Reference
 
@@ -38,6 +40,7 @@ src/
 │       ├── database.config.ts
 │       ├── email.config.ts     # SMTP settings
 │       ├── logging.config.ts
+│       ├── newrelic.config.ts  # APM settings
 │       └── queue.config.ts
 ├── modules/
 │   ├── auth/                   # Authentication module

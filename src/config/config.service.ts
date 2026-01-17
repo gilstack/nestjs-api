@@ -6,6 +6,7 @@ import type { CacheConfig } from './configs/cache.config';
 import type { DatabaseConfig } from './configs/database.config';
 import type { EmailConfig } from './configs/email.config';
 import type { LoggingConfig } from './configs/logging.config';
+import type { NewRelicConfig } from './configs/newrelic.config';
 import type { QueueConfig } from './configs/queue.config';
 
 @Injectable()
@@ -40,7 +41,12 @@ export class TypedConfigService {
     return this.configService.get<EmailConfig>('email')!;
   }
 
+  get newrelic(): NewRelicConfig {
+    return this.configService.get<NewRelicConfig>('newrelic')!;
+  }
+
   get<T>(key: string): T | undefined {
     return this.configService.get<T>(key);
   }
 }
+

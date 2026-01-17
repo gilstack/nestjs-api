@@ -1,0 +1,41 @@
+# Build artifacts
+dist
+build
+
+# Dependencies
+node_modules
+
+# Version control
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs
+
+# IDE and editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage
+
+# Documentation (keep README)
+docs
+*.md
+!README.md
+
+# Development files
+*.tsbuildinfo
+.swc

@@ -1,4 +1,29 @@
 services:
+  api:
+    container_name: storagie_api
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    volumes:
+      - ./src:/app/src:delegated
+      - ./prisma:/app/prisma:delegated
+      - ./newrelic.ts:/app/newrelic.ts:ro
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - storagie_network
+    labels:
+      - "service=api"
+    restart: unless-stopped
+
   postgres:
     container_name: storagie_postgres
     image: bitnami/postgresql:latest
