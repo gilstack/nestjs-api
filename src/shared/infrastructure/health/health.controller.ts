@@ -1,4 +1,4 @@
-import { Public } from '@modules/auth/infrastructure/decorators/public.decorator';
+
 import { Controller, Get } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -9,6 +9,7 @@ import {
 import { HealthCheck, HealthCheckResult, HealthCheckService } from '@nestjs/terminus';
 
 // internal
+import { Public } from '@modules/authentication/infrastructure/decorators/public.decorator';
 import { PrismaService } from '@shared/infrastructure/database/prisma/prisma.service';
 
 @ApiTags('Health')

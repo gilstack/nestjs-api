@@ -17,7 +17,7 @@ export default registerAs(
     accessSecret: process.env.ACCESS_SECRET!,
     accessExpiresIn: parseInt(process.env.ACCESS_EXPIRES_IN || '10', 10),
     refreshSecret: process.env.REFRESH_SECRET!,
-    refreshExpiresIn: parseInt(process.env.REFRESH_EXPIRES_IN || '7', 10),
+    refreshExpiresIn: parseInt(process.env.REFRESH_EXPIRES_IN || '1', 10),
     magicLinkCallbackPath: process.env.MAGIC_LINK_CALLBACK_PATH!,
     magicLinkExpiresIn: parseInt(process.env.MAGIC_LINK_EXPIRES_IN || '1800', 10),
     cookieDomain: process.env.COOKIE_DOMAIN || 'localhost',

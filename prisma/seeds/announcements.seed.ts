@@ -4,21 +4,16 @@ import { AnnouncementType, AnnouncementStatus, AnnouncementTarget } from '../../
 export async function seedAnnouncements(prisma: any) {
   console.log('Seeding announcements...');
 
-  // creator
-  let creator = await prisma.user.findFirst({ where: { username: 'system' } });
-  if (!creator) {
-    creator = await prisma.user.create({
-      data: {
-        username: 'system',
-        tag: '0001',
-        name: 'System',
-        role: 'ADMIN',
-        status: 'ACTIVE',
-        verifiedAt: new Date(),
-      },
-    });
-    console.log('System user ensured');
+  // creators
+  const manager = await prisma.user.findFirst({ where: { username: 'manager' } });
+  const admin = await prisma.user.findFirst({ where: { username: 'admin' } });
+
+  if (!manager || !admin) {
+    console.error('❌ Users (admin/manager) not found. Seed users first.');
+    return;
   }
+
+  const creators = [manager, admin];
 
   // clear existing
   await prisma.announcement.deleteMany({});
@@ -45,12 +40,12 @@ export async function seedAnnouncements(prisma: any) {
         target: faker.helpers.arrayElement([AnnouncementTarget.ALL, AnnouncementTarget.LOGGED_IN]),
         startedAt: faker.date.recent({ days: 10 }),
         expiredAt: faker.date.soon({ days: 30 }),
-        creatorId: creator.id,
+        creatorId: faker.helpers.arrayElement(creators).id,
       });
     }
   }
 
-  // DRAFT
+  // DRAFT (Only Manager)
   for (let i = 0; i < 4; i++) {
     announcementsData.push({
       content: `[Rascunho] ${faker.lorem.sentence({ min: 3, max: 5 })}`,
@@ -58,7 +53,7 @@ export async function seedAnnouncements(prisma: any) {
       status: AnnouncementStatus.DRAFT,
       target: AnnouncementTarget.ALL,
       startedAt: faker.date.soon({ days: 20 }),
-      creatorId: creator.id,
+      creatorId: manager.id,
     });
   }
 
@@ -71,7 +66,7 @@ export async function seedAnnouncements(prisma: any) {
       target: AnnouncementTarget.ALL,
       startedAt: faker.date.recent({ days: 60, refDate: new Date(Date.now() - 86400000 * 30) }),
       expiredAt: faker.date.recent({ days: 10 }),
-      creatorId: creator.id,
+      creatorId: faker.helpers.arrayElement(creators).id,
     });
   }
 
@@ -83,7 +78,7 @@ export async function seedAnnouncements(prisma: any) {
     target: AnnouncementTarget.ALL,
     startedAt: faker.date.past(),
     deletedAt: faker.date.recent(),
-    creatorId: creator.id,
+    creatorId: admin.id,
   });
 
   // batch create

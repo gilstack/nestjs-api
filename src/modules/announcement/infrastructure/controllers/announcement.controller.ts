@@ -20,6 +20,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { Public } from '@modules/authentication/infrastructure/decorators/public.decorator';
+import {
+  CheckPolicies,
+  Can,
+} from '@modules/authorization/infrastructure/decorators';
+import { Action, Subject } from '@modules/authorization/domain/enums';
 import { AnnouncementTarget } from '../../domain/enums/announcement.enums';
 import { CreateAnnouncementDto } from '../../application/dtos/create-announcement.dto';
 import { UpdateAnnouncementDto } from '../../application/dtos/update-announcement.dto';
@@ -32,7 +39,6 @@ import {
   ListAnnouncementsUseCase,
   UpdateAnnouncementUseCase,
 } from '../../application/use-cases';
-import { Public } from '../../../../modules/auth/infrastructure/decorators/public.decorator';
 
 @ApiTags('Announcements')
 @ApiBearerAuth()
@@ -49,6 +55,7 @@ export class AnnouncementController {
   ) {}
 
   @Post()
+  @CheckPolicies(Can(Action.Create, Subject.Announcement))
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new announcement' })
   @ApiOkResponse({ type: AnnouncementResponseDto })
@@ -61,6 +68,7 @@ export class AnnouncementController {
   }
 
   @Get()
+  @CheckPolicies(Can(Action.Read, Subject.Announcement))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'List announcements' })
   @ApiOkResponse({
@@ -81,6 +89,7 @@ export class AnnouncementController {
   }
 
   @Patch(':id')
+  @CheckPolicies(Can(Action.Update, Subject.Announcement))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update an announcement' })
   @ApiBody({ type: UpdateAnnouncementDto })
@@ -93,6 +102,7 @@ export class AnnouncementController {
   }
 
   @Delete(':id')
+  @CheckPolicies(Can(Action.Delete, Subject.Announcement))
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an announcement' })
   @ApiNoContentResponse()

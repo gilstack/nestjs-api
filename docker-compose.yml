@@ -48,13 +48,11 @@ services:
 
   redis:
     container_name: storagie_redis
-    image: bitnami/redis:latest
-    command: redis-server --protected-mode no --stop-writes-on-bgsave-error no
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --protected-mode no --stop-writes-on-bgsave-error no
     restart: always
     ports:
       - "6379:6379"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - redis_data:/data
     networks:

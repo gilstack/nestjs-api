@@ -13,7 +13,7 @@ import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { RefreshSessionUseCase } from './application/use-cases/refresh-session.use-case';
 import { RequestMagicLinkUseCase } from './application/use-cases/request-magic-link.use-case';
 import { VerifyMagicLinkUseCase } from './application/use-cases/verify-magic-link.use-case';
-import { AuthController } from './infrastructure/controllers/auth.controller';
+import { AuthenticationController } from './infrastructure/controllers/authentication.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { PrismaMagicLinkTokenRepository } from './infrastructure/repositories/prisma-magic-link-token.repository';
 import { PrismaSessionRepository } from './infrastructure/repositories/prisma-session.repository';
@@ -25,7 +25,7 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
     JwtModule.register({}),
     UserModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthenticationController],
   providers: [
     // Services
     TokenService,
@@ -58,4 +58,4 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
   ],
   exports: [JwtAuthGuard, TokenService],
 })
-export class AuthModule {}
+export class AuthenticationModule {}

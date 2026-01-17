@@ -1,0 +1,4 @@
+@modules/user/domain/entities
+@modules/authentication/infrastructure/decorators
+@modules/authorization/infrastructure/decorators
+@modules/authorization/domain/enums

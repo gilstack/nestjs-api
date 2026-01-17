@@ -2,8 +2,8 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // internal
-import { CurrentUser } from '@modules/auth/infrastructure/decorators/current-user.decorator';
-import type { RequestUser } from '@modules/auth/infrastructure/strategies/jwt-cookie.strategy';
+import { CurrentUser } from '@modules/authentication/infrastructure/decorators/current-user.decorator';
+import type { RequestUser } from '@modules/authentication/infrastructure/strategies/jwt-cookie.strategy';
 
 // relatives
 import { UserResponseDto } from '../../application/dtos/user.response.dto';

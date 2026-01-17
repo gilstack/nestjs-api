@@ -25,11 +25,13 @@
     "db:migrate:prod": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "db:seed": "npx tsx prisma/seeds/main.ts"
+    "db:seed": "npx -y tsx prisma/seeds/main.ts"
   },
   "dependencies": {
     "@bull-board/api": "^6.16.1",
     "@bull-board/fastify": "^6.16.1",
+    "@casl/ability": "^6.7.5",
+    "@casl/prisma": "^1.6.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/static": "^9.0.0",
     "@nestjs/bullmq": "^11.0.4",
@@ -54,6 +56,7 @@
     "handlebars": "^4.7.8",
     "ioredis": "^5.8.2",
     "nestjs-pino": "^4.5.0",
+    "newrelic": "^12.12.0",
     "nodemailer": "^7.0.12",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -61,8 +64,7 @@
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "newrelic": "^12.12.0"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
@@ -111,6 +113,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@modules/(.*)$": "<rootDir>/modules/$1",
+      "^@shared/(.*)$": "<rootDir>/shared/$1",
+      "^@config/(.*)$": "<rootDir>/config/$1"
+    }
   }
 }

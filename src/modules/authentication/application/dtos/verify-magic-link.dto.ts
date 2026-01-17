@@ -5,6 +5,6 @@ export class VerifyMagicLinkDto {
   @ApiProperty({ description: 'Magic link token received via email', example: 'a'.repeat(64) })
   @IsString()
   @IsNotEmpty()
-  @Length(64, 64, { message: 'Token inválido' })
+  @Length(64, 64, { message: 'Token is invalid' })
   token: string;
 }

@@ -1,8 +1,9 @@
 // internal
 import { ConfigModule } from '@config/config.module';
-import { AuthModule } from '@modules/auth/auth.module';
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { UserModule } from '@modules/user/user.module';
 import { AnnouncementModule } from '@modules/announcement/announcement.module';
+import { AuthorizationModule } from '@modules/authorization/authorization.module';
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@shared/infrastructure/cache/cache.module';
 import { DatabaseModule } from '@shared/infrastructure/database/database.module';
@@ -23,7 +24,8 @@ import { ThrottlerModule } from '@shared/infrastructure/throttler/throttler.modu
     HealthModule,
     ThrottlerModule,
     UserModule,
-    AuthModule,
+    AuthenticationModule,
+    AuthorizationModule,
     AnnouncementModule,
   ],
 })

@@ -26,7 +26,7 @@ import type { RequestUser } from '../strategies/jwt-cookie.strategy';
 
 @ApiTags('Authentication')
 @Controller('auth')
-export class AuthController {
+export class AuthenticationController {
   constructor(
     private readonly requestMagicLinkUseCase: RequestMagicLinkUseCase,
     private readonly verifyMagicLinkUseCase: VerifyMagicLinkUseCase,
@@ -49,13 +49,9 @@ export class AuthController {
     type: RequestMagicLinkDto,
     description: 'Email address for authentication',
     examples: {
-      default: {
-        summary: 'Standard email',
-        value: { email: 'user@example.com' },
-      },
-      test: {
-        summary: 'Test email',
-        value: { email: 'test@storagie.com' },
+      user: {
+        summary: 'User email',
+        value: { email: 'user@storagie.com' },
       },
     },
   })
@@ -66,7 +62,7 @@ export class AuthController {
       properties: {
         message: {
           type: 'string',
-          example: 'Se o email estiver cadastrado, você receberá um link de acesso.',
+          example: 'If the email is registered, you will receive an access link.',
         },
       },
     },
@@ -99,11 +95,10 @@ export class AuthController {
   @ApiQuery({
     name: 'email',
     description: 'Email address associated with the magic link',
-    example: 'user@example.com',
     required: true,
   })
   @ApiOkResponse({
-    description: 'Authentication successful, tokens issued via HTTP-only cookies.',
+    description: 'Authentication successful.',
     type: AuthResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired token.' })
@@ -127,10 +122,10 @@ export class AuthController {
       'No request body needed - tokens are read from cookies.',
   })
   @ApiOkResponse({
-    description: 'Session refreshed successfully. New tokens issued via cookies.',
+    description: 'Session refreshed successfully.',
     type: AuthResponseDto,
   })
-  @ApiUnauthorizedResponse({ description: 'Invalid, expired, or missing refresh token.' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token.' })
   async refresh(
     @Req() request: FastifyRequest,
     @Res({ passthrough: true }) response: FastifyReply,
@@ -147,8 +142,8 @@ export class AuthController {
       'Invalidates the current session and clears authentication cookies. ' +
       'Requires valid access token in Authorization header or cookie.',
   })
-  @ApiNoContentResponse({ description: 'Logout successful. Cookies cleared.' })
-  @ApiUnauthorizedResponse({ description: 'Not authenticated or session already expired.' })
+  @ApiNoContentResponse({ description: 'Logout successful.' })
+  @ApiUnauthorizedResponse({ description: 'Not authenticated.' })
   async logout(
     @CurrentUser() user: RequestUser,
     @Res({ passthrough: true }) response: FastifyReply,

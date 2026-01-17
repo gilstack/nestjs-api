@@ -6,16 +6,31 @@ The Storagie API uses **Magic Link authentication** - a passwordless authenticat
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   User/Client   │────▶│   AuthModule    │────▶│   EmailWorker   │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                               │                        │
-                               ▼                        ▼
-                        ┌─────────────┐          ┌─────────────┐
-                        │   Prisma    │          │  Nodemailer │
-                        │  (Sessions) │          │   (SMTP)    │
-                        └─────────────┘          └─────────────┘
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as Client (Frontend)
+    participant A as Auth API
+    participant D as Database
+    participant E as Email Service
+
+    U->>C: Request Login (Email)
+    C->>A: POST /auth/magic-link { email }
+    A->>D: Store MagicLinkToken (hashed)
+    A->>E: Queue Email Job
+    E-->>U: Send Email with Magic Link
+    A-->>C: 201 Created (Token Generated)
+
+    U->>C: Click Link (/verify?token=...)
+    C->>A: POST /auth/magic-link/verify { token }
+    A->>D: Validate Token & Check Expiry
+    A->>D: Create/Update User (Status: ACTIVE)
+    A->>D: Create New Session (Refresh Token)
+    A-->>C: 200 OK (Set-Cookie: access, refresh)
+
+    C->>A: POST /auth/me (Protected)
+    A->>D: Validate Session
+    A-->>C: 200 OK { userProfile }
 ```
 
 ## Components
