@@ -30,7 +30,7 @@ export class RequestMagicLinkUseCase {
     private readonly config: TypedConfigService,
   ) {}
 
-  async execute(dto: RequestMagicLinkDto): Promise<{ message: string; remainingSeconds?: number }> {
+  async execute(dto: RequestMagicLinkDto): Promise<{ message: string; remaining?: number }> {
     const { email } = dto;
     const normalizedEmail = email.toLowerCase().trim();
 
@@ -44,10 +44,10 @@ export class RequestMagicLinkUseCase {
       const diff = expiresAt - now;
 
       if (diff > 0) {
-        const remainingSeconds = Math.ceil(diff / 1000);
+        const remaining = Math.ceil(diff / 1000);
         return {
-          message: `A valid access link already exists.`,
-          remainingSeconds,
+          message: `Magic link sent successfully.`,
+          remaining,
         };
       }
     }
