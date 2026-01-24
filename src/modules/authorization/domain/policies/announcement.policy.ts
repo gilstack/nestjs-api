@@ -16,6 +16,7 @@ export class AnnouncementPolicy implements IPolicy {
     // Admin can manage everything
     if (user.role === UserRole.ADMIN) {
       can(Action.Manage, Subject.Announcement);
+      can(Action.Update, Subject.Announcement);
       return;
     }
 
