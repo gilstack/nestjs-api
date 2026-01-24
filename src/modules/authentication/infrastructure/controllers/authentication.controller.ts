@@ -3,7 +3,9 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiForbiddenResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -19,6 +21,7 @@ import { AuthResponseDto, RequestMagicLinkDto, VerifyMagicLinkDto } from '../../
 import { LogoutUseCase } from '../../application/use-cases/logout.use-case';
 import { RefreshSessionUseCase } from '../../application/use-cases/refresh-session.use-case';
 import { RequestMagicLinkUseCase } from '../../application/use-cases/request-magic-link.use-case';
+import { VerifyAdminUseCase } from '../../application/use-cases/verify-admin.use-case';
 import { VerifyMagicLinkUseCase } from '../../application/use-cases/verify-magic-link.use-case';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { Public } from '../decorators/public.decorator';
@@ -30,6 +33,7 @@ export class AuthenticationController {
   constructor(
     private readonly requestMagicLinkUseCase: RequestMagicLinkUseCase,
     private readonly verifyMagicLinkUseCase: VerifyMagicLinkUseCase,
+    private readonly verifyAdminUseCase: VerifyAdminUseCase,
     private readonly refreshSessionUseCase: RefreshSessionUseCase,
     private readonly logoutUseCase: LogoutUseCase,
   ) {}
@@ -110,6 +114,48 @@ export class AuthenticationController {
     @Res({ passthrough: true }) response: FastifyReply,
   ): Promise<AuthResponseDto> {
     return this.verifyMagicLinkUseCase.execute(dto, email, request, response);
+  }
+
+  @Post('admin/verify')
+  @Public()
+  @AuthRateLimit()
+  @ApiOperation({
+    summary: 'Verify admin magic link',
+    description:
+      'Verifies the magic link token for admin/dashboard access. ' +
+      'Only users with @storagie.com domain and ADMIN/MANAGER role can access. ' +
+      'Does NOT create new users - only existing users can login.',
+  })
+  @ApiBody({
+    type: VerifyMagicLinkDto,
+    description: 'Magic link token received via email',
+    examples: {
+      default: {
+        summary: 'Token from magic link',
+        value: { token: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2' },
+      },
+    },
+  })
+  @ApiQuery({
+    name: 'email',
+    description: 'Email address associated with the magic link (must be @storagie.com)',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'Authentication successful.',
+    type: AuthResponseDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired token.' })
+  @ApiForbiddenResponse({ description: 'Invalid domain or insufficient permissions.' })
+  @ApiNotFoundResponse({ description: 'User not found.' })
+  @ApiBadRequestResponse({ description: 'Token or email format invalid.' })
+  async verifyAdmin(
+    @Body() dto: VerifyMagicLinkDto,
+    @Query('email') email: string,
+    @Req() request: FastifyRequest,
+    @Res({ passthrough: true }) response: FastifyReply,
+  ): Promise<AuthResponseDto> {
+    return this.verifyAdminUseCase.execute(dto, email, request, response);
   }
 
   @Post('refresh')

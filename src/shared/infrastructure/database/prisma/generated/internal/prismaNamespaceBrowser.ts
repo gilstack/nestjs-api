@@ -121,6 +121,7 @@ export type MagicLinkTokenScalarFieldEnum = (typeof MagicLinkTokenScalarFieldEnu
 export const SessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  source: 'source',
   refreshTokenHash: 'refreshTokenHash',
   userAgent: 'userAgent',
   ipAddress: 'ipAddress',

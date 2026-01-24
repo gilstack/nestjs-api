@@ -1,8 +1,6 @@
 // internal
 import { TypedConfigService } from '@config/config.service';
-// user module
-import type { User } from '@modules/user/domain/entities/user.entity';
-import { AuthProvider } from '@modules/user/domain/enums/auth-provider.enum';
+import { UserRole } from '@modules/user/domain/enums/user-role.enum';
 import { UserStatus } from '@modules/user/domain/enums/user-status.enum';
 import type { IUserRepository } from '@modules/user/domain/repositories/user.repository';
 import { Inject, Injectable } from '@nestjs/common';
@@ -19,8 +17,11 @@ import type { ISessionRepository } from '../../domain/repositories/session.repos
 import type { AuthResponseDto, VerifyMagicLinkDto } from '../dtos';
 import { TokenService } from '../services/token.service';
 
+const ALLOWED_DOMAIN = '@storagie.com';
+const ALLOWED_ROLES: UserRole[] = [UserRole.ADMIN, UserRole.MANAGER];
+
 @Injectable()
-export class VerifyMagicLinkUseCase {
+export class VerifyAdminUseCase {
   constructor(
     @Inject(REPOSITORY_TOKENS.MAGIC_LINK_TOKEN)
     private readonly magicLinkTokenRepository: IMagicLinkTokenRepository,
@@ -42,13 +43,18 @@ export class VerifyMagicLinkUseCase {
     const { token } = dto;
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Validate domain
+    if (!normalizedEmail.endsWith(ALLOWED_DOMAIN)) {
+      this.logger.warn('Admin login attempt with invalid domain', { email: normalizedEmail });
+      throw AuthException.invalidDomain();
+    }
+
     // Find valid tokens for this email
     const validTokens = await this.magicLinkTokenRepository.findValidByEmail(normalizedEmail);
 
     let matchedToken: MagicLinkToken | null = null;
-    let isUsedToken = false;
 
-    // Check valid tokens first
+    // Check valid tokens
     for (const t of validTokens) {
       if (await this.tokenService.compareToken(token, t.tokenHash)) {
         matchedToken = t;
@@ -60,45 +66,37 @@ export class VerifyMagicLinkUseCase {
       throw AuthException.invalidToken();
     }
 
-    // Mark token as used if not already
-    if (!isUsedToken) {
-      try {
-        await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
-      } catch (error) {
-        this.logger.warn('Failed to mark token as used', { tokenId: matchedToken.id, error });
-      }
+    // Mark token as used
+    try {
+      await this.magicLinkTokenRepository.markAsUsed(matchedToken.id);
+    } catch (error) {
+      this.logger.warn('Failed to mark token as used', { tokenId: matchedToken.id, error });
     }
 
-    // Find or create user
-    let user: User | null = await this.userRepository.findByEmail(normalizedEmail);
-
-    const isNewUser = !user;
+    // Find user - admin does NOT create new users
+    const user = await this.userRepository.findByEmail(normalizedEmail);
 
     if (!user) {
-      // Create new user with account
-      const username = normalizedEmail.split('@')[0];
-      const tag = Math.random().toString(36).substring(2, 6).toUpperCase();
+      this.logger.warn('Admin login attempt for non-existent user', { email: normalizedEmail });
+      throw AuthException.userNotFound();
+    }
 
-      user = await this.userRepository.createWithAccount(
-        { username, tag },
-        { identifier: normalizedEmail, provider: AuthProvider.EMAIL },
-      );
-
-      this.logger.info('New user created via magic link', {
-        userId: user.id,
+    // Validate role
+    if (!ALLOWED_ROLES.includes(user.role as UserRole)) {
+      this.logger.warn('Admin login attempt with insufficient permissions', {
         email: normalizedEmail,
+        role: user.role,
       });
+      throw AuthException.insufficientPermissions();
     }
 
-    // Activate user if pending (first login)
-    if (user.status === UserStatus.PENDING) {
-      user = await this.userRepository.activate(user.id, normalizedEmail);
-
-      this.logger.info('User activated via magic link', { userId: user.id });
+    // Validate user status
+    if (user.status !== UserStatus.ACTIVE) {
+      throw AuthException.userInactive();
     }
 
-    // Delete existing WEB session (single session per app policy)
-    await this.sessionRepository.deleteByUserIdAndSource(user.id, SessionSource.WEB);
+    // Delete existing DASHBOARD session (single session per app policy)
+    await this.sessionRepository.deleteByUserIdAndSource(user.id, SessionSource.DASHBOARD);
 
     // Create new session
     const refreshToken = this.tokenService.generateRandomToken();
@@ -107,7 +105,7 @@ export class VerifyMagicLinkUseCase {
 
     const session = await this.sessionRepository.create({
       userId: user.id,
-      source: SessionSource.WEB,
+      source: SessionSource.DASHBOARD,
       refreshTokenHash,
       expiresAt: refreshExpiresAt,
       userAgent: request.headers['user-agent'],
@@ -119,13 +117,13 @@ export class VerifyMagicLinkUseCase {
       sub: user.id,
       email: normalizedEmail,
       role: user.role,
-      app: 'web',
+      app: 'dashboard',
     });
 
     const refreshTokenJwt = this.tokenService.generateRefreshToken({
       sub: user.id,
       sid: session.id,
-      app: 'web',
+      app: 'dashboard',
     });
 
     // Set cookies
@@ -150,8 +148,8 @@ export class VerifyMagicLinkUseCase {
       maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
     });
 
-    this.logger.info('User logged in via magic link', { userId: user.id, isNewUser });
-    this.logger.audit('LOGIN', user.id, 'Session', { method: 'magic_link', source: 'web' });
+    this.logger.info('Admin user logged in via magic link', { userId: user.id, role: user.role });
+    this.logger.audit('LOGIN', user.id, 'Session', { method: 'magic_link', source: 'dashboard' });
 
     return {
       user: {

@@ -1,6 +1,9 @@
+import { SessionSource } from '../enums/session-source.enum';
+
 export interface SessionProps {
   id: string;
   userId: string;
+  source: SessionSource;
   refreshTokenHash: string;
   userAgent: string | null;
   ipAddress: string | null;
@@ -11,6 +14,7 @@ export interface SessionProps {
 export class Session {
   id: string;
   userId: string;
+  source: SessionSource;
   refreshTokenHash: string;
   userAgent: string | null;
   ipAddress: string | null;
@@ -20,6 +24,7 @@ export class Session {
   constructor(props: SessionProps) {
     this.id = props.id;
     this.userId = props.userId;
+    this.source = props.source;
     this.refreshTokenHash = props.refreshTokenHash;
     this.userAgent = props.userAgent;
     this.ipAddress = props.ipAddress;

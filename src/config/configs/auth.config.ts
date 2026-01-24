@@ -7,7 +7,7 @@ export interface AuthConfig {
   refreshExpiresIn: number;
   magicLinkCallbackPath: string;
   magicLinkExpiresIn: number;
-  cookieDomain: string;
+  cookieDomain: string | undefined;
   cookieSecure: boolean;
 }
 
@@ -20,7 +20,8 @@ export default registerAs(
     refreshExpiresIn: parseInt(process.env.REFRESH_EXPIRES_IN || '1', 10),
     magicLinkCallbackPath: process.env.MAGIC_LINK_CALLBACK_PATH!,
     magicLinkExpiresIn: parseInt(process.env.MAGIC_LINK_EXPIRES_IN || '1800', 10),
-    cookieDomain: process.env.COOKIE_DOMAIN || 'localhost',
+    cookieDomain: process.env.COOKIE_DOMAIN || undefined,
     cookieSecure: process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production',
   }),
 );
+

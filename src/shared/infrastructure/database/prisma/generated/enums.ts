@@ -40,6 +40,14 @@ export const UserRole = {
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
+export const SessionSource = {
+  WEB: 'WEB',
+  DASHBOARD: 'DASHBOARD'
+} as const
+
+export type SessionSource = (typeof SessionSource)[keyof typeof SessionSource]
+
+
 export const AnnouncementType = {
   INFO: 'INFO',
   WARNING: 'WARNING',

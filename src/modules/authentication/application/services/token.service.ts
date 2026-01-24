@@ -6,15 +6,19 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
+export type AppType = 'web' | 'dashboard';
+
 export interface AccessTokenPayload {
   sub: string;
   email: string;
   role: string;
+  app: AppType;
 }
 
 export interface RefreshTokenPayload {
   sub: string;
   sid: string;
+  app: AppType;
 }
 
 @Injectable()
@@ -36,24 +40,18 @@ export class TokenService {
     return bcrypt.compare(token, hash);
   }
 
-  generateAccessToken(payload: AccessTokenPayload & { type: string }): string {
-    return this.jwtService.sign(
-      { ...payload, type: 'access' },
-      {
-        secret: this.config.auth.accessSecret,
-        expiresIn: Math.floor(this.getAccessTokenExpiresInMs() / 1000),
-      },
-    );
+  generateAccessToken(payload: AccessTokenPayload): string {
+    return this.jwtService.sign(payload, {
+      secret: this.config.auth.accessSecret,
+      expiresIn: Math.floor(this.getAccessTokenExpiresInMs() / 1000),
+    });
   }
 
-  generateRefreshToken(payload: RefreshTokenPayload & { type: string }): string {
-    return this.jwtService.sign(
-      { ...payload, type: 'refresh' },
-      {
-        secret: this.config.auth.refreshSecret,
-        expiresIn: Math.floor(this.getRefreshTokenExpiresInMs() / 1000),
-      },
-    );
+  generateRefreshToken(payload: RefreshTokenPayload): string {
+    return this.jwtService.sign(payload, {
+      secret: this.config.auth.refreshSecret,
+      expiresIn: Math.floor(this.getRefreshTokenExpiresInMs() / 1000),
+    });
   }
 
   verifyRefreshToken(token: string): RefreshTokenPayload {

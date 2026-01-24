@@ -43,6 +43,12 @@ export class RefreshSessionUseCase {
       throw AuthException.sessionExpired();
     }
 
+    // Validate session source matches token app
+    const expectedApp = session.source === 'WEB' ? 'web' : 'dashboard';
+    if (payload.app !== expectedApp) {
+      throw AuthException.invalidToken();
+    }
+
     const user = await this.prisma.db.user.findUnique({
       where: { id: session.userId },
       include: {
@@ -63,10 +69,10 @@ export class RefreshSessionUseCase {
       sub: user.id,
       email,
       role: user.role,
-      type: 'access',
+      app: payload.app,
     });
 
-    // Rotate Request Token
+    // Rotate Refresh Token
     const newRefreshToken = this.tokenService.generateRandomToken();
     const newRefreshTokenHash = await this.tokenService.hashToken(newRefreshToken);
     const newRefreshExpiresAt = new Date(Date.now() + this.tokenService.getRefreshTokenExpiresInMs());
@@ -77,18 +83,20 @@ export class RefreshSessionUseCase {
     });
 
     const newRefreshTokenJwt = this.tokenService.generateRefreshToken({
-        sub: user.id,
-        sid: session.id,
-        type: 'refresh',
+      sub: user.id,
+      sid: session.id,
+      app: payload.app,
     });
 
     const isSecure = this.config.auth.cookieSecure;
+    const cookieDomain = this.config.auth.cookieDomain;
 
     response.cookie('access', accessToken, {
       httpOnly: true,
       secure: isSecure,
       sameSite: 'lax',
       path: '/',
+      ...(cookieDomain && { domain: cookieDomain }),
       maxAge: this.tokenService.getAccessTokenExpiresInMs(),
     });
 
@@ -97,10 +105,11 @@ export class RefreshSessionUseCase {
       secure: isSecure,
       sameSite: 'lax',
       path: '/',
+      ...(cookieDomain && { domain: cookieDomain }),
       maxAge: this.tokenService.getRefreshTokenExpiresInMs(),
     });
 
-    this.logger.info('Session refreshed and rotated', { userId: user.id });
+    this.logger.info('Session refreshed and rotated', { userId: user.id, app: payload.app });
 
     return {
       user: {

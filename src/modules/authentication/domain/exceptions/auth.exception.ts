@@ -10,6 +10,9 @@ export type AuthErrorCode =
   | 'AUTH_SESSION_EXPIRED'
   | 'AUTH_USER_INACTIVE'
   | 'AUTH_USER_BLOCKED'
+  | 'AUTH_USER_NOT_FOUND'
+  | 'AUTH_INVALID_DOMAIN'
+  | 'AUTH_INSUFFICIENT_PERMISSIONS'
   | 'AUTH_UNAUTHORIZED';
 
 export class AuthException extends AppException {
@@ -51,6 +54,26 @@ export class AuthException extends AppException {
 
   static userBlocked(): AuthException {
     return new AuthException('AUTH_USER_BLOCKED', 'Usuário bloqueado', HttpStatus.FORBIDDEN);
+  }
+
+  static userNotFound(): AuthException {
+    return new AuthException('AUTH_USER_NOT_FOUND', 'Usuário não encontrado', HttpStatus.NOT_FOUND);
+  }
+
+  static invalidDomain(): AuthException {
+    return new AuthException(
+      'AUTH_INVALID_DOMAIN',
+      'Acesso não permitido para este domínio',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+
+  static insufficientPermissions(): AuthException {
+    return new AuthException(
+      'AUTH_INSUFFICIENT_PERMISSIONS',
+      'Permissões insuficientes para acessar o admin',
+      HttpStatus.FORBIDDEN,
+    );
   }
 
   static unauthorized(): AuthException {

@@ -186,6 +186,23 @@ export type EnumAccountProviderWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAccountProviderFilter<$PrismaModel>
 }
 
+export type EnumSessionSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionSource | Prisma.EnumSessionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel> | $Enums.SessionSource
+}
+
+export type EnumSessionSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionSource | Prisma.EnumSessionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionSourceWithAggregatesFilter<$PrismaModel> | $Enums.SessionSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel>
+}
+
 export type EnumAnnouncementTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.AnnouncementType | Prisma.EnumAnnouncementTypeFieldRefInput<$PrismaModel>
   in?: $Enums.AnnouncementType[] | Prisma.ListEnumAnnouncementTypeFieldRefInput<$PrismaModel>
@@ -420,6 +437,23 @@ export type NestedEnumAccountProviderWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAccountProviderFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAccountProviderFilter<$PrismaModel>
+}
+
+export type NestedEnumSessionSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionSource | Prisma.EnumSessionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel> | $Enums.SessionSource
+}
+
+export type NestedEnumSessionSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SessionSource | Prisma.EnumSessionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SessionSource[] | Prisma.ListEnumSessionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSessionSourceWithAggregatesFilter<$PrismaModel> | $Enums.SessionSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSessionSourceFilter<$PrismaModel>
 }
 
 export type NestedEnumAnnouncementTypeFilter<$PrismaModel = never> = {

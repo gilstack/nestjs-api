@@ -12,6 +12,7 @@ import { TokenService } from './application/services/token.service';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { RefreshSessionUseCase } from './application/use-cases/refresh-session.use-case';
 import { RequestMagicLinkUseCase } from './application/use-cases/request-magic-link.use-case';
+import { VerifyAdminUseCase } from './application/use-cases/verify-admin.use-case';
 import { VerifyMagicLinkUseCase } from './application/use-cases/verify-magic-link.use-case';
 import { AuthenticationController } from './infrastructure/controllers/authentication.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
@@ -33,6 +34,7 @@ import { JwtCookieStrategy } from './infrastructure/strategies/jwt-cookie.strate
     // Use Cases
     RequestMagicLinkUseCase,
     VerifyMagicLinkUseCase,
+    VerifyAdminUseCase,
     RefreshSessionUseCase,
     LogoutUseCase,
 

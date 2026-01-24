@@ -864,6 +864,7 @@ export type MagicLinkTokenScalarFieldEnum = (typeof MagicLinkTokenScalarFieldEnu
 export const SessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  source: 'source',
   refreshTokenHash: 'refreshTokenHash',
   userAgent: 'userAgent',
   ipAddress: 'ipAddress',
@@ -989,6 +990,20 @@ export type EnumAccountProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'AccountProvider[]'
  */
 export type ListEnumAccountProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccountProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionSource'
+ */
+export type EnumSessionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionSource'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionSource[]'
+ */
+export type ListEnumSessionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionSource[]'>
     
 
 

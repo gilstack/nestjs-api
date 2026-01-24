@@ -27,6 +27,7 @@ export type AggregateSession = {
 export type SessionMinAggregateOutputType = {
   id: string | null
   userId: string | null
+  source: $Enums.SessionSource | null
   refreshTokenHash: string | null
   userAgent: string | null
   ipAddress: string | null
@@ -37,6 +38,7 @@ export type SessionMinAggregateOutputType = {
 export type SessionMaxAggregateOutputType = {
   id: string | null
   userId: string | null
+  source: $Enums.SessionSource | null
   refreshTokenHash: string | null
   userAgent: string | null
   ipAddress: string | null
@@ -47,6 +49,7 @@ export type SessionMaxAggregateOutputType = {
 export type SessionCountAggregateOutputType = {
   id: number
   userId: number
+  source: number
   refreshTokenHash: number
   userAgent: number
   ipAddress: number
@@ -59,6 +62,7 @@ export type SessionCountAggregateOutputType = {
 export type SessionMinAggregateInputType = {
   id?: true
   userId?: true
+  source?: true
   refreshTokenHash?: true
   userAgent?: true
   ipAddress?: true
@@ -69,6 +73,7 @@ export type SessionMinAggregateInputType = {
 export type SessionMaxAggregateInputType = {
   id?: true
   userId?: true
+  source?: true
   refreshTokenHash?: true
   userAgent?: true
   ipAddress?: true
@@ -79,6 +84,7 @@ export type SessionMaxAggregateInputType = {
 export type SessionCountAggregateInputType = {
   id?: true
   userId?: true
+  source?: true
   refreshTokenHash?: true
   userAgent?: true
   ipAddress?: true
@@ -162,6 +168,7 @@ export type SessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type SessionGroupByOutputType = {
   id: string
   userId: string
+  source: $Enums.SessionSource
   refreshTokenHash: string
   userAgent: string | null
   ipAddress: string | null
@@ -193,6 +200,7 @@ export type SessionWhereInput = {
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   id?: Prisma.StringFilter<"Session"> | string
   userId?: Prisma.StringFilter<"Session"> | string
+  source?: Prisma.EnumSessionSourceFilter<"Session"> | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFilter<"Session"> | string
   userAgent?: Prisma.StringNullableFilter<"Session"> | string | null
   ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
@@ -204,6 +212,7 @@ export type SessionWhereInput = {
 export type SessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
   userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -214,21 +223,24 @@ export type SessionOrderByWithRelationInput = {
 
 export type SessionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  userId?: string
+  userId_source?: Prisma.SessionUserIdSourceCompoundUniqueInput
   AND?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
+  userId?: Prisma.StringFilter<"Session"> | string
+  source?: Prisma.EnumSessionSourceFilter<"Session"> | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFilter<"Session"> | string
   userAgent?: Prisma.StringNullableFilter<"Session"> | string | null
   ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
   expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id" | "userId">
+}, "id" | "userId_source">
 
 export type SessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
   userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -245,6 +257,7 @@ export type SessionScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SessionScalarWhereWithAggregatesInput | Prisma.SessionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Session"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Session"> | string
+  source?: Prisma.EnumSessionSourceWithAggregatesFilter<"Session"> | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringWithAggregatesFilter<"Session"> | string
   userAgent?: Prisma.StringNullableWithAggregatesFilter<"Session"> | string | null
   ipAddress?: Prisma.StringNullableWithAggregatesFilter<"Session"> | string | null
@@ -254,17 +267,19 @@ export type SessionScalarWhereWithAggregatesInput = {
 
 export type SessionCreateInput = {
   id?: string
+  source?: $Enums.SessionSource
   refreshTokenHash: string
   userAgent?: string | null
   ipAddress?: string | null
   expiresAt: Date | string
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutSessionInput
+  user: Prisma.UserCreateNestedOneWithoutSessionsInput
 }
 
 export type SessionUncheckedCreateInput = {
   id?: string
   userId: string
+  source?: $Enums.SessionSource
   refreshTokenHash: string
   userAgent?: string | null
   ipAddress?: string | null
@@ -274,17 +289,19 @@ export type SessionUncheckedCreateInput = {
 
 export type SessionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutSessionNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
 }
 
 export type SessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -295,6 +312,7 @@ export type SessionUncheckedUpdateInput = {
 export type SessionCreateManyInput = {
   id?: string
   userId: string
+  source?: $Enums.SessionSource
   refreshTokenHash: string
   userAgent?: string | null
   ipAddress?: string | null
@@ -304,6 +322,7 @@ export type SessionCreateManyInput = {
 
 export type SessionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -314,6 +333,7 @@ export type SessionUpdateManyMutationInput = {
 export type SessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -321,14 +341,25 @@ export type SessionUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SessionNullableScalarRelationFilter = {
-  is?: Prisma.SessionWhereInput | null
-  isNot?: Prisma.SessionWhereInput | null
+export type SessionListRelationFilter = {
+  every?: Prisma.SessionWhereInput
+  some?: Prisma.SessionWhereInput
+  none?: Prisma.SessionWhereInput
+}
+
+export type SessionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type SessionUserIdSourceCompoundUniqueInput = {
+  userId: string
+  source: $Enums.SessionSource
 }
 
 export type SessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
@@ -339,6 +370,7 @@ export type SessionCountOrderByAggregateInput = {
 export type SessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
@@ -349,6 +381,7 @@ export type SessionMaxOrderByAggregateInput = {
 export type SessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   refreshTokenHash?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
@@ -356,40 +389,55 @@ export type SessionMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
-export type SessionCreateNestedOneWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput
-  connect?: Prisma.SessionWhereUniqueInput
+export type SessionCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput> | Prisma.SessionCreateWithoutUserInput[] | Prisma.SessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput | Prisma.SessionCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.SessionCreateManyUserInputEnvelope
+  connect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
 }
 
-export type SessionUncheckedCreateNestedOneWithoutUserInput = {
-  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput
-  connect?: Prisma.SessionWhereUniqueInput
+export type SessionUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput> | Prisma.SessionCreateWithoutUserInput[] | Prisma.SessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput | Prisma.SessionCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.SessionCreateManyUserInputEnvelope
+  connect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
 }
 
-export type SessionUpdateOneWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput
-  upsert?: Prisma.SessionUpsertWithoutUserInput
-  disconnect?: Prisma.SessionWhereInput | boolean
-  delete?: Prisma.SessionWhereInput | boolean
-  connect?: Prisma.SessionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.SessionUpdateToOneWithWhereWithoutUserInput, Prisma.SessionUpdateWithoutUserInput>, Prisma.SessionUncheckedUpdateWithoutUserInput>
+export type SessionUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput> | Prisma.SessionCreateWithoutUserInput[] | Prisma.SessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput | Prisma.SessionCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.SessionUpsertWithWhereUniqueWithoutUserInput | Prisma.SessionUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.SessionCreateManyUserInputEnvelope
+  set?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  disconnect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  delete?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  connect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  update?: Prisma.SessionUpdateWithWhereUniqueWithoutUserInput | Prisma.SessionUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.SessionUpdateManyWithWhereWithoutUserInput | Prisma.SessionUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
 }
 
-export type SessionUncheckedUpdateOneWithoutUserNestedInput = {
-  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
-  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput
-  upsert?: Prisma.SessionUpsertWithoutUserInput
-  disconnect?: Prisma.SessionWhereInput | boolean
-  delete?: Prisma.SessionWhereInput | boolean
-  connect?: Prisma.SessionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.SessionUpdateToOneWithWhereWithoutUserInput, Prisma.SessionUpdateWithoutUserInput>, Prisma.SessionUncheckedUpdateWithoutUserInput>
+export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput> | Prisma.SessionCreateWithoutUserInput[] | Prisma.SessionUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.SessionCreateOrConnectWithoutUserInput | Prisma.SessionCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.SessionUpsertWithWhereUniqueWithoutUserInput | Prisma.SessionUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.SessionCreateManyUserInputEnvelope
+  set?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  disconnect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  delete?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  connect?: Prisma.SessionWhereUniqueInput | Prisma.SessionWhereUniqueInput[]
+  update?: Prisma.SessionUpdateWithWhereUniqueWithoutUserInput | Prisma.SessionUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.SessionUpdateManyWithWhereWithoutUserInput | Prisma.SessionUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
+}
+
+export type EnumSessionSourceFieldUpdateOperationsInput = {
+  set?: $Enums.SessionSource
 }
 
 export type SessionCreateWithoutUserInput = {
   id?: string
+  source?: $Enums.SessionSource
   refreshTokenHash: string
   userAgent?: string | null
   ipAddress?: string | null
@@ -399,6 +447,7 @@ export type SessionCreateWithoutUserInput = {
 
 export type SessionUncheckedCreateWithoutUserInput = {
   id?: string
+  source?: $Enums.SessionSource
   refreshTokenHash: string
   userAgent?: string | null
   ipAddress?: string | null
@@ -411,19 +460,54 @@ export type SessionCreateOrConnectWithoutUserInput = {
   create: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
 }
 
-export type SessionUpsertWithoutUserInput = {
-  update: Prisma.XOR<Prisma.SessionUpdateWithoutUserInput, Prisma.SessionUncheckedUpdateWithoutUserInput>
-  create: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
-  where?: Prisma.SessionWhereInput
+export type SessionCreateManyUserInputEnvelope = {
+  data: Prisma.SessionCreateManyUserInput | Prisma.SessionCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
-export type SessionUpdateToOneWithWhereWithoutUserInput = {
-  where?: Prisma.SessionWhereInput
+export type SessionUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.SessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SessionUpdateWithoutUserInput, Prisma.SessionUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.SessionCreateWithoutUserInput, Prisma.SessionUncheckedCreateWithoutUserInput>
+}
+
+export type SessionUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.SessionWhereUniqueInput
   data: Prisma.XOR<Prisma.SessionUpdateWithoutUserInput, Prisma.SessionUncheckedUpdateWithoutUserInput>
+}
+
+export type SessionUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.SessionScalarWhereInput
+  data: Prisma.XOR<Prisma.SessionUpdateManyMutationInput, Prisma.SessionUncheckedUpdateManyWithoutUserInput>
+}
+
+export type SessionScalarWhereInput = {
+  AND?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
+  OR?: Prisma.SessionScalarWhereInput[]
+  NOT?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
+  id?: Prisma.StringFilter<"Session"> | string
+  userId?: Prisma.StringFilter<"Session"> | string
+  source?: Prisma.EnumSessionSourceFilter<"Session"> | $Enums.SessionSource
+  refreshTokenHash?: Prisma.StringFilter<"Session"> | string
+  userAgent?: Prisma.StringNullableFilter<"Session"> | string | null
+  ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
+  expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+}
+
+export type SessionCreateManyUserInput = {
+  id?: string
+  source?: $Enums.SessionSource
+  refreshTokenHash: string
+  userAgent?: string | null
+  ipAddress?: string | null
+  expiresAt: Date | string
+  createdAt?: Date | string
 }
 
 export type SessionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -433,6 +517,17 @@ export type SessionUpdateWithoutUserInput = {
 
 export type SessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
+  refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SessionUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumSessionSourceFieldUpdateOperationsInput | $Enums.SessionSource
   refreshTokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -445,6 +540,7 @@ export type SessionUncheckedUpdateWithoutUserInput = {
 export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  source?: boolean
   refreshTokenHash?: boolean
   userAgent?: boolean
   ipAddress?: boolean
@@ -456,6 +552,7 @@ export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  source?: boolean
   refreshTokenHash?: boolean
   userAgent?: boolean
   ipAddress?: boolean
@@ -467,6 +564,7 @@ export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  source?: boolean
   refreshTokenHash?: boolean
   userAgent?: boolean
   ipAddress?: boolean
@@ -478,6 +576,7 @@ export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type SessionSelectScalar = {
   id?: boolean
   userId?: boolean
+  source?: boolean
   refreshTokenHash?: boolean
   userAgent?: boolean
   ipAddress?: boolean
@@ -485,7 +584,7 @@ export type SessionSelectScalar = {
   createdAt?: boolean
 }
 
-export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "refreshTokenHash" | "userAgent" | "ipAddress" | "expiresAt" | "createdAt", ExtArgs["result"]["session"]>
+export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "source" | "refreshTokenHash" | "userAgent" | "ipAddress" | "expiresAt" | "createdAt", ExtArgs["result"]["session"]>
 export type SessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -504,6 +603,7 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
+    source: $Enums.SessionSource
     refreshTokenHash: string
     userAgent: string | null
     ipAddress: string | null
@@ -935,6 +1035,7 @@ export interface Prisma__SessionClient<T, Null = never, ExtArgs extends runtime.
 export interface SessionFieldRefs {
   readonly id: Prisma.FieldRef<"Session", 'String'>
   readonly userId: Prisma.FieldRef<"Session", 'String'>
+  readonly source: Prisma.FieldRef<"Session", 'SessionSource'>
   readonly refreshTokenHash: Prisma.FieldRef<"Session", 'String'>
   readonly userAgent: Prisma.FieldRef<"Session", 'String'>
   readonly ipAddress: Prisma.FieldRef<"Session", 'String'>
