@@ -1,4 +1,4 @@
-# Storagie API
+# Boilerbase API
 
 High-performance backend service for the Storagie platform, engineered with NestJS and Fastify. This system adheres to Domain-Driven Design (DDD) principles and utilizes a robust event-driven architecture to ensure scalability and maintainability.
 
